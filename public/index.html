@@ -301,8 +301,6 @@ const LS = "cmf-album-v1", UI = "cmf-album-ui-v1";
 let ui = {open:{}, cat:"all", status:"all", sort:"new", img:true, showIgnored:false};
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-const cached = lsGet(LS); if(cached && cached.owned) state = sanitize(cached);
-const savedUi = lsGet(UI); if(savedUi) ui = {...ui, ...savedUi};
 
 const FIG_ID=/^\d{4,5}-\d{1,2}$/, SET_ID=/^\d{4,5}$/;
 function sanitize(d){
@@ -314,6 +312,8 @@ function sanitize(d){
   for(const k of Object.keys(ig.figs||{})) if(FIG_ID.test(k)) out.ignore.figs[k]=1;
   return out;
 }
+const cached = lsGet(LS); if(cached && cached.owned) state = sanitize(cached);
+const savedUi = lsGet(UI); if(savedUi) ui = {...ui, ...savedUi};
 
 // ---------- sync (server API, localStorage as offline cache) ----------
 const syncEl=document.getElementById("sync");
