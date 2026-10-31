@@ -67,6 +67,16 @@ Der erste Durchlauf dauert gut eine halbe Stunde (2 Abfragen pro Figur, mit Paus
 Danach werden die Preise wöchentlich aufgefrischt. BrickLink erlaubt 5.000 Abfragen pro Tag,
 die App nutzt höchstens 4.000. Der Cache liegt in `data/prices.json`.
 
+## Neue Serien
+
+Der Server prüft einmal täglich den öffentlichen Rebrickable-Katalog. Taucht dort eine
+neue Collectible-Minifigures-Serie auf (mindestens 6 Einzelfiguren), erscheint sie
+automatisch in der App, mit Bildern und, soweit über Brickset auffindbar, mit
+BrickLink-Nummer für die Preise. Der Cache liegt in `data/catalog.json`.
+
+- `CATALOG_SKIP`: Setnummern, die ignoriert werden (Standard: `71049`, die F1-Rennwagen)
+- `CATALOG_CHECK_HOURS`: Prüfintervall in Stunden (Standard: 24)
+
 ## Update
 
 ```bash

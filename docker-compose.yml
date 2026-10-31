@@ -20,3 +20,6 @@ services:
       - BL_TOKEN_SECRET=${BL_TOKEN_SECRET:-}
       - PRICE_CURRENCY=EUR
       - PRICE_REFRESH_DAYS=7
+      # Neue Serien: täglich prüfen, F1-Rennwagen (keine Minifiguren) auslassen
+      - CATALOG_CHECK_HOURS=24
+      - CATALOG_SKIP=71049

@@ -145,4 +145,11 @@ function snapshot() {
   return { enabled: ENABLED, currency: CURRENCY, loaded, total: new Set(Object.values(IDS)).size, running, error: cache.lastError || "", items };
 }
 
-module.exports = { start, snapshot };
+// BrickLink numbers for series found later by the catalog check
+function addIds(map) {
+  let added = 0;
+  for (const [fig, bl] of Object.entries(map)) if (IDS[fig] !== bl) { IDS[fig] = bl; added++; }
+  if (added && ENABLED) setTimeout(refresh, 15000);
+}
+
+module.exports = { start, snapshot, addIds };

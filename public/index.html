@@ -110,6 +110,17 @@ select{background:var(--surface);border:1px solid var(--line);border-radius:8px;
 .stats .stat.val small{display:block;font-size:.74rem;color:var(--muted);margin-top:2px}
 .lbprice{display:grid;grid-template-columns:auto auto;gap:2px 14px;font-size:.85rem;margin-top:6px;font-variant-numeric:tabular-nums}
 .lbprice dt{color:var(--muted)} .lbprice dd{margin:0;font-weight:600}
+.ficons{display:flex;gap:0}
+.ignbtn{color:var(--muted)}
+.ignbtn[aria-pressed="true"]{color:var(--ink)}
+.fig.ign{opacity:.55;border-style:dashed}
+.fig.ign .tap,.fig.ign .step{pointer-events:none}
+.fig.ign .step{visibility:hidden}
+.igntag{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:var(--muted);padding:0 10px 8px}
+.series.ignored{opacity:.6;border-style:dashed}
+.badge.off{background:var(--surface-2);color:var(--muted)}
+.ignbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin:0 0 10px}
+.ignbar .btn{padding:5px 10px;font-size:.8rem}
 .frow{display:flex;justify-content:space-between;align-items:center;padding:0 6px 6px 10px;gap:6px}
 .step{display:flex;align-items:center;gap:2px;font-variant-numeric:tabular-nums;font-size:.82rem}
 .step button,.heart{width:28px;height:28px;border-radius:6px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--muted)}
@@ -192,6 +203,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
     </div>
   </section>
 
+  <div class="ignbar" id="ignBar" hidden><span id="ignText"></span><button class="btn" id="ignToggle">Anzeigen</button></div>
   <main id="list" aria-live="polite"></main>
 
   <footer>Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Bilder werden direkt von Rebrickable geladen. Preise: BrickLink-Preisführer, gebrauchte Minifigur ohne Ständer, wöchentlich aktualisiert. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
@@ -267,21 +279,38 @@ const SERIES = RAW.map(([set,name,year,cat,figs,extra={}],i)=>({
   figs: figs.split("|").map((n,j)=>({id:set+"-"+(j+1), no:j+1, name:n, note:(extra.n||{})[j+1]||"", rb: RB[set] ? set+"-"+RB[set].split(",")[j] : ""}))
 }));
 const FIGS = {}; SERIES.forEach(s=>s.figs.forEach(f=>FIGS[f.id]={...f, series:s}));
-const TOTAL = Object.keys(FIGS).length;
+// series found later by the server's daily catalog check
+async function loadCatalog(){
+  try{
+    const r=await fetch("api/catalog",{cache:"no-store"}); if(!r.ok) return;
+    const d=await r.json(); let added=0;
+    (d.series||[]).sort((a,b)=>a.set.localeCompare(b.set)).forEach(x=>{
+      if(SERIES.some(s=>s.set===x.set)) return;
+      const ser={id:x.set,set:x.set,name:x.name,year:x.year,cat:x.cat==="regular"?"regular":"licensed",order:RAW.length+added,note:"automatisch erkannt",auto:true,
+        figs:x.figs.map((f,i)=>({id:f.id,no:i+1,name:f.name,note:"",rb:f.rb||""}))};
+      SERIES.push(ser); ser.figs.forEach(f=>FIGS[f.id]={...f,series:ser}); added++;
+    });
+    if(added) render();
+  }catch(e){}
+}
 
 // ---------- state ----------
-let state = {owned:{}, wish:{}, updated:0};
+let state = {owned:{}, wish:{}, ignore:{series:{},figs:{}}, updated:0};
 const LS = "cmf-album-v1", UI = "cmf-album-ui-v1";
-let ui = {open:{}, cat:"all", status:"all", sort:"new", img:true};
+let ui = {open:{}, cat:"all", status:"all", sort:"new", img:true, showIgnored:false};
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 const cached = lsGet(LS); if(cached && cached.owned) state = sanitize(cached);
 const savedUi = lsGet(UI); if(savedUi) ui = {...ui, ...savedUi};
 
+const FIG_ID=/^\d{4,5}-\d{1,2}$/, SET_ID=/^\d{4,5}$/;
 function sanitize(d){
-  const out={owned:{},wish:{},updated:Number(d.updated)||0};
-  for(const [k,v] of Object.entries(d.owned||{})){ const n=Math.min(99,Math.max(0,parseInt(v,10)||0)); if(FIGS[k]&&n>0) out.owned[k]=n; }
-  for(const k of Object.keys(d.wish||{})){ if(FIGS[k]&&d.wish[k]) out.wish[k]=1; }
+  const out={owned:{},wish:{},ignore:{series:{},figs:{}},updated:Number(d.updated)||0};
+  for(const [k,v] of Object.entries(d.owned||{})){ const n=Math.min(99,Math.max(0,parseInt(v,10)||0)); if(FIG_ID.test(k)&&n>0) out.owned[k]=n; }
+  for(const k of Object.keys(d.wish||{})){ if(FIG_ID.test(k)&&d.wish[k]) out.wish[k]=1; }
+  const ig=d.ignore||{};
+  for(const k of Object.keys(ig.series||{})) if(SET_ID.test(k)) out.ignore.series[k]=1;
+  for(const k of Object.keys(ig.figs||{})) if(FIG_ID.test(k)) out.ignore.figs[k]=1;
   return out;
 }
 
@@ -333,6 +362,11 @@ loadPrices();
 
 // ---------- actions ----------
 const count = id => state.owned[id]||0;
+const serIgnored = s => !!state.ignore.series[s.set];
+const figIgnored = f => !!state.ignore.figs[f.id] || !!state.ignore.series[(f.series||FIGS[f.id].series).set];
+const activeFigs = s => serIgnored(s) ? [] : s.figs.filter(f=>!state.ignore.figs[f.id]);
+function toggleIgnoreFig(id){ if(state.ignore.figs[id]) delete state.ignore.figs[id]; else { state.ignore.figs[id]=1; delete state.wish[id]; } commit(); }
+function toggleIgnoreSeries(s){ if(state.ignore.series[s.set]) { delete state.ignore.series[s.set]; toast(s.name+" wieder aufgenommen"); } else { state.ignore.series[s.set]=1; s.figs.forEach(f=>delete state.wish[f.id]); toast(s.name+" ausgeblendet"); } commit(); }
 function setCount(id,n){ n=Math.max(0,Math.min(99,n)); if(n) {state.owned[id]=n; delete state.wish[id];} else delete state.owned[id]; commit(); }
 function toggleWish(id){ if(state.wish[id]) delete state.wish[id]; else state.wish[id]=1; commit(); }
 
@@ -341,28 +375,33 @@ const list=document.getElementById("list");
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const eyeSvg=off=>off?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
 const heartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.5 3 5 6.4 5c2 0 3.2 1.1 3.9 2.2.3.5 1.1.5 1.4 0C12.4 6.1 13.6 5 15.6 5 19 5 20.7 8.5 19.2 11.4 17 15.6 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
 
 function seriesCost(s){
   let sum=0,known=0,missing=0;
-  for(const f of s.figs){ if(count(f.id)) continue; missing++; const p=priceOf(f.id); const v=p&&(p.o??p.s); if(v!=null){sum+=v;known++;} }
+  for(const f of activeFigs(s)){ if(count(f.id)) continue; missing++; const p=priceOf(f.id); const v=p&&(p.o??p.s); if(v!=null){sum+=v;known++;} }
   return known ? ` · Rest ca. ${fmtEur(Math.round(sum))}${known<missing?"+":""}` : "";
 }
-function seriesStats(s){ const got=s.figs.filter(f=>count(f.id)>0).length; return {got, total:s.figs.length, done:got===s.figs.length}; }
+function seriesStats(s){ const a=activeFigs(s); const got=a.filter(f=>count(f.id)>0).length; return {got, total:a.length, done:a.length>0&&got===a.length}; }
 function priceLine(id){
   const p=priceOf(id); if(!p||p.t==null) return `<div class="price"><span>Preis lädt…</span></div>`;
   return `<div class="price"><span title="Ø Verkaufspreis gebraucht, letzte 6 Monate">Verk. <b>${fmtEur(p.s)}</b></span><span title="Ø aktuelle Angebote gebraucht">Ang. <b>${fmtEur(p.o)}</b></span></div>`;
 }
 function matchStatus(f){
+  if(figIgnored(f)) return ui.showIgnored && ui.status==="all";
   const c=count(f.id);
   switch(ui.status){case "missing":return c===0;case "own":return c>0;case "dup":return c>1;case "wish":return !!state.wish[f.id];default:return true;}
 }
 
 function render(){
   // stats
-  let own=0,dup=0; for(const v of Object.values(state.owned)){own++; dup+=v-1;}
-  const done=SERIES.filter(s=>seriesStats(s).done).length;
-  $("stOwn").textContent=own+" / "+TOTAL; $("stBar").style.width=(own/TOTAL*100).toFixed(1)+"%";
+  let own=0,dup=0,total=0;
+  for(const s of SERIES) for(const f of activeFigs(s)){ total++; const c=count(f.id); if(c){own++;} }
+  for(const v of Object.values(state.owned)) dup+=v-1;
+  const activeSeries=SERIES.filter(s=>!serIgnored(s)&&activeFigs(s).length);
+  const done=activeSeries.filter(s=>seriesStats(s).done).length;
+  $("stOwn").textContent=own+" / "+total; $("stBar").style.width=(total?own/total*100:0).toFixed(1)+"%";
   if(PR.enabled){
     let val=0, miss=0;
     for(const [id,n] of Object.entries(state.owned)){ const p=priceOf(id); if(p&&p.s!=null) val+=p.s*n; }
@@ -370,7 +409,7 @@ function render(){
     $("stValNote").textContent = PR.loaded<PR.total ? `Preise ${PR.loaded}/${PR.total} geladen` : "Ø Verkäufe 6 Monate";
     if(PR.error && !PR.loaded) $("stValNote").textContent="BrickLink: "+PR.error;
   } else $("valCard").hidden=true;
-  $("stDone").textContent=done+" / "+SERIES.length; $("stDup").textContent=dup; $("stWish").textContent=Object.keys(state.wish).length;
+  $("stDone").textContent=done+" / "+activeSeries.length; $("stDup").textContent=dup; $("stWish").textContent=Object.keys(state.wish).length;
 
   const q=norm($("q").value.trim());
   let arr=SERIES.filter(s=>ui.cat==="all"||s.cat===ui.cat);
@@ -380,38 +419,43 @@ function render(){
 
   const filtering = q || ui.status!=="all";
   let html="", shown=0;
+  const nIgS=SERIES.filter(serIgnored).length, nIgF=Object.keys(state.ignore.figs).filter(id=>FIGS[id]&&!serIgnored(FIGS[id].series)).length;
   for(const s of arr){
+    if(serIgnored(s) && !ui.showIgnored) continue;
     const seriesHit = q && (norm(s.name).includes(q)||s.set.includes(q));
     const figs=s.figs.filter(f=>matchStatus(f) && (!q||seriesHit||norm(f.name).includes(q)));
     if(filtering && !figs.length) continue;
     shown++;
-    const st=seriesStats(s); const open = filtering || ui.open[s.id];
-    html+=`<section class="series${st.done?" done":""}${open?" open":""}" data-s="${s.id}">
+    const st=seriesStats(s); const open = filtering || ui.open[s.id]; const sIg=serIgnored(s);
+    html+=`<section class="series${st.done?" done":""}${open?" open":""}${sIg?" ignored":""}" data-s="${s.id}">
       <button class="shead" data-act="toggle" aria-expanded="${open?"true":"false"}">
         <span class="setno">${s.set}</span>
-        <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${s.figs.length} Figuren · ${s.cat==="regular"?"Nummerierte Serie":"Lizenzserie"}${s.note?" · "+esc(s.note):""}${PR.enabled&&!st.done?seriesCost(s):""}</small>
+        <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${s.figs.length} Figuren${activeFigs(s).length<s.figs.length&&!sIg?` (${s.figs.length-activeFigs(s).length} ausgeblendet)`:""} · ${s.cat==="regular"?"Nummerierte Serie":"Lizenzserie"}${s.note?" · "+esc(s.note):""}${PR.enabled&&!st.done?seriesCost(s):""}</small>
           <span class="bar" aria-hidden="true"><i style="width:${(st.got/st.total*100).toFixed(1)}%"></i></span></span>
-        <span class="scount">${st.done?'<span class="badge">Komplett</span>':""}${st.got}/${st.total}
+        <span class="scount">${sIg?'<span class="badge off">Ausgeblendet</span>':st.done?'<span class="badge">Komplett</span>':`${st.got}/${st.total}`}
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
       </button>`;
     if(open){
-      html+=`<div class="sbody">${filtering?"":`<div class="sactions"><button class="btn" data-act="all">Alle als vorhanden markieren</button><button class="btn danger" data-act="clear">Serie zurücksetzen</button></div>`}<div class="grid" style="${filtering?"margin-top:12px":""}">`;
+      html+=`<div class="sbody">${filtering?"":`<div class="sactions">${sIg?"":`<button class="btn" data-act="all">Alle als vorhanden markieren</button><button class="btn danger" data-act="clear">Serie zurücksetzen</button>`}<button class="btn" data-act="ignser">${sIg?"Serie wieder aufnehmen":"Serie will ich nicht"}</button></div>`}<div class="grid" style="${filtering?"margin-top:12px":""}">`;
       for(const f of figs){
-        const c=count(f.id), w=!!state.wish[f.id];
+        const c=count(f.id), w=!!state.wish[f.id], ig=figIgnored(f);
         const pic = f.rb ? `<div class="pic" data-act="zoom" style="cursor:zoom-in"><img src="https://cdn.rebrickable.com/media/thumbs/sets/${f.rb}.jpg/250x250p.jpg" alt="" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=none>Noch kein Bild</span>';"><button class="zoom" data-act="zoom" aria-label="${esc(f.name)} groß anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg></button></div>` : "";
-        html+=`<div class="fig${c>1?" dup":c?" own":""}" data-f="${f.id}">${pic}
+        html+=`<div class="fig${c>1?" dup":c?" own":""}${ig?" ign":""}" data-f="${f.id}">${pic}
           <button class="tap" data-act="tick" aria-pressed="${c?"true":"false"}" aria-label="${esc(f.name)} ${c?"vorhanden":"fehlt"}"><span class="box">${c?"✓":f.no}</span><span class="fname">${esc(f.name)}${f.note?`<em>${esc(f.note)}</em>`:""}</span></button>
           ${PR.enabled?priceLine(f.id):""}
           <div class="frow">
             <div class="step"><button data-act="dec" aria-label="Eine weniger" ${c?"":"disabled"}>−</button><span title="Anzahl">${c}×</span><button data-act="inc" aria-label="Eine mehr">+</button></div>
-            ${c?"":`<button class="heart" data-act="wish" aria-pressed="${w}" aria-label="Wunschliste">${heartSvg}</button>`}
-          </div></div>`;
+            <span class="ficons">${c||ig?"":`<button class="heart" data-act="wish" aria-pressed="${w}" aria-label="Wunschliste" title="Wunschliste">${heartSvg}</button>`}${sIg?"":`<button class="heart ignbtn" data-act="ignfig" aria-pressed="${!!state.ignore.figs[f.id]}" aria-label="${ig?"Wieder aufnehmen":"Will ich nicht"}" title="${ig?"Wieder aufnehmen":"Will ich nicht"}">${eyeSvg(ig)}</button>`}</span>
+          </div>${ig?`<div class="igntag">Will ich nicht</div>`:""}</div>`;
       }
       html+=`</div></div>`;
     }
     html+=`</section>`;
   }
   list.classList.toggle("noimg", !ui.img);
+  const ib=$("ignBar");
+  if(nIgS||nIgF){ ib.hidden=false; $("ignText").textContent=[nIgS?`${nIgS} ${nIgS===1?"Serie":"Serien"}`:"", nIgF?`${nIgF} ${nIgF===1?"Figur":"Figuren"}`:""].filter(Boolean).join(" und ")+" ausgeblendet"; $("ignToggle").textContent=ui.showIgnored?"Verbergen":"Anzeigen"; }
+  else ib.hidden=true;
   list.innerHTML = shown? html : `<div class="empty">Keine Figuren für diese Auswahl.</div>`;
   if(!$("tradePanel").hidden) renderTrade();
 }
@@ -436,7 +480,9 @@ list.addEventListener("click",e=>{
     case "dec": setCount(id, count(id)-1); break;
     case "wish": toggleWish(id); break;
     case "zoom": openZoom(id); break;
-    case "all": s.figs.forEach(f=>{ if(!state.owned[f.id]) state.owned[f.id]=1; delete state.wish[f.id]; }); commit(); toast(s.name+" komplett markiert"); break;
+    case "ignfig": toggleIgnoreFig(id); break;
+    case "ignser": toggleIgnoreSeries(s); break;
+    case "all": activeFigs(s).forEach(f=>{ if(!state.owned[f.id]) state.owned[f.id]=1; delete state.wish[f.id]; }); commit(); toast(s.name+" komplett markiert"); break;
     case "clear": arm(b,"Wirklich zurücksetzen?",()=>{ s.figs.forEach(f=>{delete state.owned[f.id]; delete state.wish[f.id];}); commit(); toast(s.name+" zurückgesetzt"); }); break;
   }
 });
@@ -460,7 +506,7 @@ function renderTrade(){
   $("tOffer").value = dups.length? bySeries(dups,f=>`  ${f.no}. ${f.name} – ${state.owned[f.id]-1}×`) : "Noch keine doppelten Figuren.";
   const wish=Object.keys(state.wish);
   const started=SERIES.filter(s=>{const st=seriesStats(s);return st.got>0&&!st.done;});
-  const missing=[]; started.forEach(s=>s.figs.forEach(f=>{ if(!count(f.id)&&!state.wish[f.id]) missing.push(f.id); }));
+  const missing=[]; started.forEach(s=>activeFigs(s).forEach(f=>{ if(!count(f.id)&&!state.wish[f.id]) missing.push(f.id); }));
   let t="";
   if(wish.length) t+="WUNSCHLISTE\n"+bySeries(wish,f=>`  ${f.no}. ${f.name}`);
   if(missing.length) t+=(t?"\n\n":"")+"FEHLT IN ANGEFANGENEN SERIEN\n"+bySeries(missing,f=>`  ${f.no}. ${f.name}`);
@@ -472,14 +518,15 @@ async function copyText(text, el){
   catch(e){ if(el){el.focus(); el.select();} toast("Text markiert – jetzt kopieren"); }
 }
 document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>{const el=$(b.dataset.copy); copyText(el.value, el);}));
-$("btnExport").addEventListener("click",()=>{ const el=$("dataText"); el.value=JSON.stringify({app:"cmf-album",version:1,owned:state.owned,wish:state.wish,exported:new Date().toISOString()},null,1); copyText(el.value, el); $("dataNote").textContent=""; });
+$("btnExport").addEventListener("click",()=>{ const el=$("dataText"); el.value=JSON.stringify({app:"cmf-album",version:1,owned:state.owned,wish:state.wish,ignore:state.ignore,exported:new Date().toISOString()},null,1); copyText(el.value, el); $("dataNote").textContent=""; });
 $("btnImport").addEventListener("click",()=>{
   try{ const d=JSON.parse($("dataText").value); if(!d||typeof d!=="object"||!d.owned) throw 0;
     state=sanitize(d); commit(); $("dataNote").textContent=`Eingespielt: ${Object.keys(state.owned).length} Figuren.`; toast("Sicherung eingespielt"); }
   catch(e){ $("dataNote").textContent="Das ist keine gültige Sicherung. Füge den kompletten Text aus „Sicherung erzeugen“ ein."; }
 });
-$("btnReset").addEventListener("click",e=>arm(e.currentTarget,"Wirklich alles löschen?",()=>{ state={owned:{},wish:{},updated:0}; commit(); toast("Sammlung zurückgesetzt"); }));
+$("btnReset").addEventListener("click",e=>arm(e.currentTarget,"Wirklich alles löschen?",()=>{ state={owned:{},wish:{},ignore:{series:{},figs:{}},updated:0}; commit(); toast("Sammlung zurückgesetzt"); }));
 
+$("ignToggle").addEventListener("click",()=>{ ui.showIgnored=!ui.showIgnored; lsSet(UI,ui); render(); });
 const btnImg=$("btnImg");
 function syncImgBtn(){ btnImg.setAttribute("aria-checked",String(ui.img)); btnImg.title = ui.img ? "Bilder ausblenden" : "Bilder einblenden"; }
 syncImgBtn();
@@ -505,6 +552,7 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!lb.hidden) closeZ
 let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1800); }
 
 render();
+loadCatalog();
 </script>
 
 </body>

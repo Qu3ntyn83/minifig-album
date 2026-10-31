@@ -4,6 +4,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const prices = require("./prices");
+const catalog = require("./catalog");
 
 const PORT = Number(process.env.PORT) || 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
@@ -15,6 +16,7 @@ const KEEP_BACKUPS = Number(process.env.KEEP_BACKUPS) || 30;
 
 fs.mkdirSync(BACKUPS, { recursive: true });
 prices.start(DATA_DIR);
+catalog.start(DATA_DIR, { onIds: prices.addIds });
 
 function readState() {
   try { return JSON.parse(fs.readFileSync(STATE, "utf8")); }
@@ -28,6 +30,9 @@ function clean(d) {
     if (/^\d{4,5}-\d{1,2}$/.test(k) && n > 0) out.owned[k] = n;
   }
   for (const k of Object.keys(d.wish || {})) if (/^\d{4,5}-\d{1,2}$/.test(k) && d.wish[k]) out.wish[k] = 1;
+  out.ignore = { series: {}, figs: {} };
+  for (const k of Object.keys((d.ignore || {}).series || {})) if (/^\d{4,5}$/.test(k)) out.ignore.series[k] = 1;
+  for (const k of Object.keys((d.ignore || {}).figs || {})) if (/^\d{4,5}-\d{1,2}$/.test(k)) out.ignore.figs[k] = 1;
   return out;
 }
 
@@ -60,6 +65,7 @@ http.createServer((req, res) => {
 
   if (url.pathname === "/healthz") return send(res, 200, '{"ok":true}');
 
+  if (url.pathname === "/api/catalog") return send(res, 200, JSON.stringify(catalog.snapshot()));
   if (url.pathname === "/api/prices") return send(res, 200, JSON.stringify(prices.snapshot()));
 
   if (url.pathname === "/api/state") {
