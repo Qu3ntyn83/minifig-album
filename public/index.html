@@ -119,6 +119,9 @@ select{background:var(--surface);border:1px solid var(--line);border-radius:8px;
 .fig.ign .step{visibility:hidden}
 .igntag{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:var(--muted);padding:0 10px 8px}
 .series.ignored{opacity:.6;border-style:dashed}
+.wishc{display:inline-flex;align-items:center;gap:3px;font-size:.78rem;font-weight:600;color:var(--wish);background:var(--wish-bg);border-radius:999px;padding:2px 8px 2px 6px}
+.wishc svg{width:13px;height:13px}
+.wishc svg path{fill:currentColor}
 .badge.off{background:var(--surface-2);color:var(--muted)}
 .ignbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin:0 0 10px}
 .ignbar .btn{padding:5px 10px;font-size:.8rem}
@@ -384,6 +387,7 @@ function seriesCost(s){
   for(const f of activeFigs(s)){ if(count(f.id)) continue; missing++; const p=priceOf(f.id); const v=p&&(p.o??p.s); if(v!=null){sum+=v;known++;} }
   return known ? ` · Rest ca. ${fmtEur(Math.round(sum))}${known<missing?"+":""}` : "";
 }
+const wishN = s => activeFigs(s).filter(f=>state.wish[f.id]).length;
 function seriesStats(s){ const a=activeFigs(s); const got=a.filter(f=>count(f.id)>0).length; return {got, total:a.length, done:a.length>0&&got===a.length}; }
 function priceLine(id){
   const p=priceOf(id); if(!p||p.t==null) return `<div class="price"><span>Preis lädt…</span></div>`;
@@ -433,7 +437,7 @@ function render(){
         <span class="setno">${s.set}</span>
         <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${s.figs.length} Figuren${activeFigs(s).length<s.figs.length&&!sIg?` (${s.figs.length-activeFigs(s).length} ausgeblendet)`:""} · ${s.cat==="regular"?"Nummerierte Serie":"Lizenzserie"}${s.note?" · "+esc(s.note):""}${PR.enabled&&!st.done?seriesCost(s):""}</small>
           <span class="bar" aria-hidden="true"><i style="width:${(st.got/st.total*100).toFixed(1)}%"></i></span></span>
-        <span class="scount">${sIg?'<span class="badge off">Ausgeblendet</span>':st.done?'<span class="badge">Komplett</span>':`${st.got}/${st.total}`}
+        <span class="scount">${!sIg&&wishN(s)?`<span class="wishc" title="${wishN(s)} auf der Wunschliste" aria-label="${wishN(s)} auf der Wunschliste">${heartSvg}${wishN(s)}</span>`:""}${sIg?'<span class="badge off">Ausgeblendet</span>':st.done?'<span class="badge">Komplett</span>':`${st.got}/${st.total}`}
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
       </button>`;
     if(open){
