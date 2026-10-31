@@ -3,6 +3,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const prices = require("./prices");
 
 const PORT = Number(process.env.PORT) || 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
@@ -13,6 +14,7 @@ const MAX_BODY = 512 * 1024;
 const KEEP_BACKUPS = Number(process.env.KEEP_BACKUPS) || 30;
 
 fs.mkdirSync(BACKUPS, { recursive: true });
+prices.start(DATA_DIR);
 
 function readState() {
   try { return JSON.parse(fs.readFileSync(STATE, "utf8")); }
@@ -57,6 +59,8 @@ http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
 
   if (url.pathname === "/healthz") return send(res, 200, '{"ok":true}');
+
+  if (url.pathname === "/api/prices") return send(res, 200, JSON.stringify(prices.snapshot()));
 
   if (url.pathname === "/api/state") {
     if (req.method === "GET") return send(res, 200, JSON.stringify(readState()));

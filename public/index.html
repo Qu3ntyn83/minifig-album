@@ -36,7 +36,7 @@ h1 .stud{display:inline-block;width:.62em;height:.62em;border-radius:50%;backgro
 .sync{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
 .sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .sync.ok i{background:var(--own)} .sync.busy i{background:var(--yellow)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 14px}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:18px 0 14px}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
 .stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.05;font-variant-numeric:tabular-nums}
 .stat span{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
@@ -60,7 +60,6 @@ select{background:var(--surface);border:1px solid var(--line);border-radius:8px;
 .sw .knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--surface);transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
 .sw[aria-checked="true"] .track{background:var(--own)}
 .sw[aria-checked="true"] .knob{transform:translateX(12px)}
-.pic:has(.none) .zoom{display:none}
 .pic .none{position:absolute;inset:0;display:grid;place-items:center;font-size:.74rem;color:#7a8094;text-align:center;padding:8px}
 .btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .btn.danger{color:var(--wish)}
@@ -105,6 +104,12 @@ select{background:var(--surface);border:1px solid var(--line);border-radius:8px;
 .fig.dup .box{background:var(--dup);border-color:var(--dup)}
 .fname{font-weight:500;font-size:.88rem;line-height:1.25;overflow-wrap:anywhere;min-width:0}
 .fname em{display:block;font-style:normal;font-size:.72rem;color:var(--muted);margin-top:2px}
+.price{display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 4px;font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.price span{white-space:nowrap}
+.price b{color:var(--ink);font-weight:600}
+.stats .stat.val small{display:block;font-size:.74rem;color:var(--muted);margin-top:2px}
+.lbprice{display:grid;grid-template-columns:auto auto;gap:2px 14px;font-size:.85rem;margin-top:6px;font-variant-numeric:tabular-nums}
+.lbprice dt{color:var(--muted)} .lbprice dd{margin:0;font-weight:600}
 .frow{display:flex;justify-content:space-between;align-items:center;padding:0 6px 6px 10px;gap:6px}
 .step{display:flex;align-items:center;gap:2px;font-variant-numeric:tabular-nums;font-size:.82rem}
 .step button,.heart{width:28px;height:28px;border-radius:6px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--muted)}
@@ -126,7 +131,7 @@ textarea{width:100%;min-height:180px;border:1px solid var(--line);border-radius:
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:.88rem;font-weight:500;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
-@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stitle .bar{max-width:none}}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat.main{grid-column:1/-1}.cols{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stitle .bar{max-width:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
@@ -147,6 +152,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
     <div class="stat"><span>Serien komplett</span><b id="stDone">0</b></div>
     <div class="stat"><span>Doppelte</span><b id="stDup">0</b></div>
     <div class="stat"><span>Wunschliste</span><b id="stWish">0</b></div>
+    <div class="stat val" id="valCard" hidden><span>Wert gebraucht</span><b id="stVal">–</b><small id="stValNote"></small></div>
   </section>
 
   <div class="tools">
@@ -188,13 +194,13 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
 
   <main id="list" aria-live="polite"></main>
 
-  <footer>Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Bilder werden direkt von Rebrickable geladen. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
+  <footer>Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Bilder werden direkt von Rebrickable geladen. Preise: BrickLink-Preisführer, gebrauchte Minifigur ohne Ständer, wöchentlich aktualisiert. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
 </div>
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbName">
   <div class="lb-card">
     <div class="plate"><img id="lbImg" alt=""></div>
-    <div class="meta"><div><strong id="lbName"></strong><small id="lbSeries"></small></div>
-      <div class="row" style="margin:0"><a id="lbLink" href="#" target="_blank" rel="noopener">Bei Rebrickable ansehen</a><button class="btn" id="lbClose">Schließen</button></div></div>
+    <div class="meta"><div><strong id="lbName"></strong><small id="lbSeries"></small><dl class="lbprice" id="lbPrice" hidden></dl></div>
+      <div class="row" style="margin:0"><a id="lbLink" href="#" target="_blank" rel="noopener">Rebrickable</a><a id="lbBl" href="#" target="_blank" rel="noopener" hidden>BrickLink</a><button class="btn" id="lbClose">Schließen</button></div></div>
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -312,6 +318,19 @@ pull();
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden) pull(); });
 setInterval(()=>{ if(!document.hidden) pull(); },30000);
 
+// ---------- BrickLink prices ----------
+let PR = {enabled:false, items:{}};
+const fmtEur = v => v==null ? "–" : new Intl.NumberFormat("de-DE",{style:"currency",currency:PR.currency||"EUR"}).format(v);
+const priceOf = id => (PR.items||{})[id] || null;
+async function loadPrices(){
+  try{
+    const r=await fetch("api/prices",{cache:"no-store"}); if(!r.ok) return;
+    PR=await r.json(); render();
+    if(PR.enabled && PR.loaded<PR.total) setTimeout(loadPrices,120000);
+  }catch(e){}
+}
+loadPrices();
+
 // ---------- actions ----------
 const count = id => state.owned[id]||0;
 function setCount(id,n){ n=Math.max(0,Math.min(99,n)); if(n) {state.owned[id]=n; delete state.wish[id];} else delete state.owned[id]; commit(); }
@@ -324,7 +343,16 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 const heartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.5 3 5 6.4 5c2 0 3.2 1.1 3.9 2.2.3.5 1.1.5 1.4 0C12.4 6.1 13.6 5 15.6 5 19 5 20.7 8.5 19.2 11.4 17 15.6 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
 
+function seriesCost(s){
+  let sum=0,known=0,missing=0;
+  for(const f of s.figs){ if(count(f.id)) continue; missing++; const p=priceOf(f.id); const v=p&&(p.o??p.s); if(v!=null){sum+=v;known++;} }
+  return known ? ` · Rest ca. ${fmtEur(Math.round(sum))}${known<missing?"+":""}` : "";
+}
 function seriesStats(s){ const got=s.figs.filter(f=>count(f.id)>0).length; return {got, total:s.figs.length, done:got===s.figs.length}; }
+function priceLine(id){
+  const p=priceOf(id); if(!p||p.t==null) return `<div class="price"><span>Preis lädt…</span></div>`;
+  return `<div class="price"><span title="Ø Verkaufspreis gebraucht, letzte 6 Monate">Verk. <b>${fmtEur(p.s)}</b></span><span title="Ø aktuelle Angebote gebraucht">Ang. <b>${fmtEur(p.o)}</b></span></div>`;
+}
 function matchStatus(f){
   const c=count(f.id);
   switch(ui.status){case "missing":return c===0;case "own":return c>0;case "dup":return c>1;case "wish":return !!state.wish[f.id];default:return true;}
@@ -335,6 +363,13 @@ function render(){
   let own=0,dup=0; for(const v of Object.values(state.owned)){own++; dup+=v-1;}
   const done=SERIES.filter(s=>seriesStats(s).done).length;
   $("stOwn").textContent=own+" / "+TOTAL; $("stBar").style.width=(own/TOTAL*100).toFixed(1)+"%";
+  if(PR.enabled){
+    let val=0, miss=0;
+    for(const [id,n] of Object.entries(state.owned)){ const p=priceOf(id); if(p&&p.s!=null) val+=p.s*n; }
+    $("valCard").hidden=false; $("stVal").textContent=fmtEur(Math.round(val));
+    $("stValNote").textContent = PR.loaded<PR.total ? `Preise ${PR.loaded}/${PR.total} geladen` : "Ø Verkäufe 6 Monate";
+    if(PR.error && !PR.loaded) $("stValNote").textContent="BrickLink: "+PR.error;
+  } else $("valCard").hidden=true;
   $("stDone").textContent=done+" / "+SERIES.length; $("stDup").textContent=dup; $("stWish").textContent=Object.keys(state.wish).length;
 
   const q=norm($("q").value.trim());
@@ -354,7 +389,7 @@ function render(){
     html+=`<section class="series${st.done?" done":""}${open?" open":""}" data-s="${s.id}">
       <button class="shead" data-act="toggle" aria-expanded="${open?"true":"false"}">
         <span class="setno">${s.set}</span>
-        <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${s.figs.length} Figuren · ${s.cat==="regular"?"Nummerierte Serie":"Lizenzserie"}${s.note?" · "+esc(s.note):""}</small>
+        <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${s.figs.length} Figuren · ${s.cat==="regular"?"Nummerierte Serie":"Lizenzserie"}${s.note?" · "+esc(s.note):""}${PR.enabled&&!st.done?seriesCost(s):""}</small>
           <span class="bar" aria-hidden="true"><i style="width:${(st.got/st.total*100).toFixed(1)}%"></i></span></span>
         <span class="scount">${st.done?'<span class="badge">Komplett</span>':""}${st.got}/${st.total}
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
@@ -366,6 +401,7 @@ function render(){
         const pic = f.rb ? `<div class="pic" data-act="zoom" style="cursor:zoom-in"><img src="https://cdn.rebrickable.com/media/thumbs/sets/${f.rb}.jpg/250x250p.jpg" alt="" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=none>Noch kein Bild</span>';"><button class="zoom" data-act="zoom" aria-label="${esc(f.name)} groß anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg></button></div>` : "";
         html+=`<div class="fig${c>1?" dup":c?" own":""}" data-f="${f.id}">${pic}
           <button class="tap" data-act="tick" aria-pressed="${c?"true":"false"}" aria-label="${esc(f.name)} ${c?"vorhanden":"fehlt"}"><span class="box">${c?"✓":f.no}</span><span class="fname">${esc(f.name)}${f.note?`<em>${esc(f.note)}</em>`:""}</span></button>
+          ${PR.enabled?priceLine(f.id):""}
           <div class="frow">
             <div class="step"><button data-act="dec" aria-label="Eine weniger" ${c?"":"disabled"}>−</button><span title="Anzahl">${c}×</span><button data-act="inc" aria-label="Eine mehr">+</button></div>
             ${c?"":`<button class="heart" data-act="wish" aria-pressed="${w}" aria-label="Wunschliste">${heartSvg}</button>`}
@@ -452,10 +488,14 @@ btnImg.addEventListener("click",()=>{ ui.img=!ui.img; lsSet(UI,ui); syncImgBtn()
 const lb=$("lb");
 function openZoom(id){
   const f=FIGS[id]; if(!f||!f.rb) return;
-  const tile=document.querySelector(`[data-f="${id}"] .pic img`); if(!tile) return;
-  $("lbImg").src="https://cdn.rebrickable.com/media/sets/"+f.rb+".jpg"; $("lbImg").alt=f.name;
+  const hasImg=!!document.querySelector(`[data-f="${id}"] .pic img`); $("lbImg").hidden=!hasImg; if(hasImg){ $("lbImg").src="https://cdn.rebrickable.com/media/sets/"+f.rb+".jpg"; $("lbImg").alt=f.name; } document.querySelector(".lb-card .plate").hidden=!hasImg;
   $("lbName").textContent=f.name; $("lbSeries").textContent=f.series.name+" · Nr. "+f.no+" · "+f.series.set;
   $("lbLink").href="https://rebrickable.com/sets/"+f.rb+"/";
+  const p=priceOf(id);
+  if(p&&p.bl){ $("lbBl").hidden=false; $("lbBl").href="https://www.bricklink.com/v2/catalog/catalogitem.page?M="+encodeURIComponent(p.bl)+"#T=P"; } else $("lbBl").hidden=true;
+  const dl=$("lbPrice");
+  if(PR.enabled&&p&&p.t!=null){ dl.hidden=false; dl.innerHTML=`<dt>Verkauft Ø 6 Monate</dt><dd>${fmtEur(p.s)} <small>(${p.sq||0} Stk.)</small></dd><dt>Angebote Ø aktuell</dt><dd>${fmtEur(p.o)} <small>(${p.oq||0} Stk.)</small></dd>`; }
+  else dl.hidden=true;
   lb.hidden=false; $("lbClose").focus();
 }
 function closeZoom(){ lb.hidden=true; $("lbImg").removeAttribute("src"); }

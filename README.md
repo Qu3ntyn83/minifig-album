@@ -40,6 +40,33 @@ DNS: `minifigs-home.powerscripting.de` als CNAME auf deinen DDNS-Record in Cloud
 Hängt Caddy im selben Docker-Netzwerk, kannst du statt der IP auch
 `reverse_proxy minifig-album:3000` nutzen und das Port-Mapping weglassen.
 
+## BrickLink-Preise (optional)
+
+Pro Figur zeigt die App zwei Werte aus dem BrickLink-Preisführer, jeweils **gebraucht**
+für die Minifigur ohne Ständer (BrickLink-Nummer wie `col312`):
+
+- **Verk.**: Durchschnittspreis der Verkäufe der letzten 6 Monate
+- **Ang.**: Durchschnittspreis der aktuellen Angebote
+
+Dazu den Sammlungswert und pro Serie, was das Vervollständigen ungefähr kostet.
+
+Einrichtung:
+
+1. Auf BrickLink einloggen und unter https://www.bricklink.com/v2/api/register_consumer.page
+   einen API-Zugang anlegen.
+2. Einen Access Token erzeugen. Als IP die öffentliche IP von D-Dock-01 eintragen, oder
+   `0.0.0.0`, wenn sie sich ändern kann.
+3. Auf dem Server:
+   ```bash
+   cd /opt/minifig-album && cp .env.example .env && nano .env   # 4 Werte eintragen
+   docker compose up -d
+   docker logs -f minifig-album   # zeigt den Fortschritt
+   ```
+
+Der erste Durchlauf dauert gut eine halbe Stunde (2 Abfragen pro Figur, mit Pause dazwischen).
+Danach werden die Preise wöchentlich aufgefrischt. BrickLink erlaubt 5.000 Abfragen pro Tag,
+die App nutzt höchstens 4.000. Der Cache liegt in `data/prices.json`.
+
 ## Update
 
 ```bash
