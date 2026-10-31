@@ -55,6 +55,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:.88rem}
 .btn:hover{border-color:var(--muted)}
+.sw{display:inline-flex;align-items:center;gap:8px}
+.sw .track{width:30px;height:18px;border-radius:9px;background:var(--line);position:relative;transition:background .15s}
+.sw .knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--surface);transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sw[aria-checked="true"] .track{background:var(--own)}
+.sw[aria-checked="true"] .knob{transform:translateX(12px)}
+.pic:has(.none) .zoom{display:none}
+.pic .none{position:absolute;inset:0;display:grid;place-items:center;font-size:.74rem;color:#7a8094;text-align:center;padding:8px}
 .btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .btn.danger{color:var(--wish)}
 .series{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
@@ -153,7 +160,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
     <select id="sort" aria-label="Sortierung">
       <option value="new">Neueste zuerst</option><option value="old">Älteste zuerst</option><option value="progress">Fortschritt</option>
     </select>
-    <button class="btn" id="btnImg" aria-pressed="true">Bilder an</button>
+    <button class="btn sw" id="btnImg" role="switch" aria-checked="true"><span class="track" aria-hidden="true"><span class="knob"></span></span>Bilder</button>
     <button class="btn" id="btnTrade">Tauschliste</button>
     <button class="btn" id="btnData">Sichern</button>
   </div>
@@ -356,7 +363,7 @@ function render(){
       html+=`<div class="sbody">${filtering?"":`<div class="sactions"><button class="btn" data-act="all">Alle als vorhanden markieren</button><button class="btn danger" data-act="clear">Serie zurücksetzen</button></div>`}<div class="grid" style="${filtering?"margin-top:12px":""}">`;
       for(const f of figs){
         const c=count(f.id), w=!!state.wish[f.id];
-        const pic = f.rb ? `<div class="pic" data-act="zoom" style="cursor:zoom-in"><img src="https://cdn.rebrickable.com/media/thumbs/sets/${f.rb}.jpg/250x250p.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.remove()"><button class="zoom" data-act="zoom" aria-label="${esc(f.name)} groß anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg></button></div>` : "";
+        const pic = f.rb ? `<div class="pic" data-act="zoom" style="cursor:zoom-in"><img src="https://cdn.rebrickable.com/media/thumbs/sets/${f.rb}.jpg/250x250p.jpg" alt="" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=none>Noch kein Bild</span>';"><button class="zoom" data-act="zoom" aria-label="${esc(f.name)} groß anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg></button></div>` : "";
         html+=`<div class="fig${c>1?" dup":c?" own":""}" data-f="${f.id}">${pic}
           <button class="tap" data-act="tick" aria-pressed="${c?"true":"false"}" aria-label="${esc(f.name)} ${c?"vorhanden":"fehlt"}"><span class="box">${c?"✓":f.no}</span><span class="fname">${esc(f.name)}${f.note?`<em>${esc(f.note)}</em>`:""}</span></button>
           <div class="frow">
@@ -438,13 +445,14 @@ $("btnImport").addEventListener("click",()=>{
 $("btnReset").addEventListener("click",e=>arm(e.currentTarget,"Wirklich alles löschen?",()=>{ state={owned:{},wish:{},updated:0}; commit(); toast("Sammlung zurückgesetzt"); }));
 
 const btnImg=$("btnImg");
-function syncImgBtn(){ btnImg.setAttribute("aria-pressed",String(ui.img)); btnImg.textContent = ui.img ? "Bilder an" : "Bilder aus"; }
+function syncImgBtn(){ btnImg.setAttribute("aria-checked",String(ui.img)); btnImg.title = ui.img ? "Bilder ausblenden" : "Bilder einblenden"; }
 syncImgBtn();
 btnImg.addEventListener("click",()=>{ ui.img=!ui.img; lsSet(UI,ui); syncImgBtn(); render(); });
 
 const lb=$("lb");
 function openZoom(id){
   const f=FIGS[id]; if(!f||!f.rb) return;
+  const tile=document.querySelector(`[data-f="${id}"] .pic img`); if(!tile) return;
   $("lbImg").src="https://cdn.rebrickable.com/media/sets/"+f.rb+".jpg"; $("lbImg").alt=f.name;
   $("lbName").textContent=f.name; $("lbSeries").textContent=f.series.name+" · Nr. "+f.no+" · "+f.series.set;
   $("lbLink").href="https://rebrickable.com/sets/"+f.rb+"/";
