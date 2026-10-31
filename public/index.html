@@ -13,17 +13,17 @@
 :root{
   --bg:#f3f4f7; --surface:#ffffff; --surface-2:#e9ebf1; --ink:#161b2e; --muted:#5d6479; --line:#d6d9e3;
   --yellow:#f5c400; --yellow-ink:#3a2e00; --own:#1f7a4d; --own-bg:#e3f3ea; --dup:#b5530f; --dup-bg:#fbebdc; --wish:#c22a4c; --wish-bg:#fbe4ea;
-  --focus:#2f5bd3;
+  --focus:#2f5bd3; --plate:#ffffff;
   --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
   --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#11141f; --surface:#1a1f2e; --surface-2:#242a3c; --ink:#eceef5; --muted:#9aa1b6; --line:#2f364b;
-  --yellow:#f5c400; --yellow-ink:#2a2100; --own:#5fd39a; --own-bg:#173326; --dup:#f2a35e; --dup-bg:#3a2614; --wish:#ff7f9c; --wish-bg:#3a1a24; --focus:#8fb0ff; color-scheme:dark}}
+  --yellow:#f5c400; --yellow-ink:#2a2100; --own:#5fd39a; --own-bg:#173326; --dup:#f2a35e; --dup-bg:#3a2614; --wish:#ff7f9c; --wish-bg:#3a1a24; --focus:#8fb0ff; --plate:#e4e6ec; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#11141f; --surface:#1a1f2e; --surface-2:#242a3c; --ink:#eceef5; --muted:#9aa1b6; --line:#2f364b;
-  --yellow:#f5c400; --yellow-ink:#2a2100; --own:#5fd39a; --own-bg:#173326; --dup:#f2a35e; --dup-bg:#3a2614; --wish:#ff7f9c; --wish-bg:#3a1a24; --focus:#8fb0ff; color-scheme:dark}
+  --yellow:#f5c400; --yellow-ink:#2a2100; --own:#5fd39a; --own-bg:#173326; --dup:#f2a35e; --dup-bg:#3a2614; --wish:#ff7f9c; --wish-bg:#3a1a24; --focus:#8fb0ff; --plate:#e4e6ec; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -73,10 +73,25 @@ select{background:var(--surface);border:1px solid var(--line);border-radius:8px;
 .sbody{padding:0 14px 14px;border-top:1px dashed var(--line)}
 .sactions{display:flex;gap:8px;flex-wrap:wrap;padding:10px 0;justify-content:flex-end}
 .sactions .btn{padding:5px 10px;font-size:.8rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
 .fig{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:9px;background:var(--bg);min-width:0;min-height:96px}
 .fig.own{background:var(--own-bg);border-color:var(--own)}
 .fig.dup{background:var(--dup-bg);border-color:var(--dup)}
+.pic{display:block;aspect-ratio:4/3;width:100%;background:var(--plate);border-radius:8px 8px 0 0;overflow:hidden;position:relative}
+.pic img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
+.fig.own .pic img,.fig.dup .pic img{opacity:1}
+.fig:not(.own):not(.dup) .pic img{opacity:.72;filter:saturate(.75)}
+.zoom{position:absolute;right:4px;bottom:4px;width:28px;height:28px;border-radius:6px;border:0;background:var(--surface);color:var(--muted);display:grid;place-items:center;cursor:pointer;opacity:.9}
+.zoom svg{width:15px;height:15px}
+.noimg .pic{display:none}
+.lb{position:fixed;inset:0;z-index:30;background:rgba(10,12,20,.72);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lb-card{background:var(--surface);border-radius:12px;max-width:min(520px,100%);width:100%;overflow:hidden}
+.lb-card .plate{background:var(--plate);display:grid;place-items:center;aspect-ratio:1/1}
+.lb-card img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:multiply}
+.lb-card .meta{padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.lb-card .meta strong{font-family:var(--display);font-weight:600;font-size:1.1rem;display:block}
+.lb-card .meta small{color:var(--muted)}
+.lb-card a{color:var(--focus);font-weight:600;font-size:.88rem}
 .fig .tap{flex:1;display:flex;gap:9px;align-items:flex-start;padding:10px 10px 6px;border:0;background:transparent;text-align:left;cursor:pointer;min-width:0;border-radius:9px 9px 0 0}
 .box{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);background:var(--surface)}
 .fig.own .box,.fig.dup .box{background:var(--own);border-color:var(--own);color:var(--surface)}
@@ -138,6 +153,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
     <select id="sort" aria-label="Sortierung">
       <option value="new">Neueste zuerst</option><option value="old">Älteste zuerst</option><option value="progress">Fortschritt</option>
     </select>
+    <button class="btn" id="btnImg" aria-pressed="true">Bilder an</button>
     <button class="btn" id="btnTrade">Tauschliste</button>
     <button class="btn" id="btnData">Sichern</button>
   </div>
@@ -165,7 +181,14 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
 
   <main id="list" aria-live="polite"></main>
 
-  <footer>Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
+  <footer>Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Bilder werden direkt von Rebrickable geladen. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
+</div>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbName">
+  <div class="lb-card">
+    <div class="plate"><img id="lbImg" alt=""></div>
+    <div class="meta"><div><strong id="lbName"></strong><small id="lbSeries"></small></div>
+      <div class="row" style="margin:0"><a id="lbLink" href="#" target="_blank" rel="noopener">Bei Rebrickable ansehen</a><button class="btn" id="lbClose">Schließen</button></div></div>
+  </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -188,7 +211,7 @@ const RAW = [
 ["71005","The Simpsons",2014,"l","Homer Simpson|Bart Simpson|Marge Simpson|Lisa Simpson|Maggie Simpson|Grampa Simpson|Ned Flanders|Krusty the Clown|Milhouse Van Houten|Ralph Wiggum|Apu Nahasapeemapetilon|Nelson Muntz|Itchy|Scratchy|Chief Wiggum|Mr. Burns"],
 ["71007","Series 12",2014,"r","Wizard|Hun Warrior|Fairytale Princess|Video Game Guy|Battle Goddess|Space Miner|Lifeguard|Prospector|Jester|Dino Tracker|Pizza Delivery Man|Rock Star|Swashbuckler|Piggy Guy|Genie Girl|Spooky Girl"],
 ["71008","Series 13",2015,"r","Classic King|Sheriff|Unicorn Girl|Snake Charmer|Goblin|Paleontologist|Alien Trooper|Egyptian Warrior|Carpenter|Evil Wizard|Fencer|Samurai|Disco Diva|Hot Dog Guy|Lady Cyclops|Galaxy Trooper"],
-["71009","The Simpsons Series 2",2015,"l","Date Night Homer|Date Night Marge|Lisa with Snowball II|Maggie with Santa's Little Helper|Bartman|Fallout Boy Milhouse|Comic Book Guy|Martin Prince|Professor Frink|Hans Moleman|Patty and Selma|Groundskeeper Willie|Edna Krabappel|Waylon Smithers|Dr. Hibbert"],
+["71009","The Simpsons Series 2",2015,"l","Date Night Homer|Date Night Marge|Lisa with Snowball II|Maggie with Santa's Little Helper|Bartman|Fallout Boy Milhouse|Comic Book Guy|Martin Prince|Professor Frink|Hans Moleman|Patty|Groundskeeper Willie|Edna Krabappel|Waylon Smithers|Dr. Hibbert|Selma"],
 ["71010","Series 14 – Monsters",2015,"r","Wolf Guy|Zombie Pirate|Monster Scientist|Wacky Witch|Plant Monster|Fly Monster|Specter|Zombie Cheerleader|Tiger Woman|Gargoyle|Skeleton Guy|Zombie Rocker|Zombie Businessman|Banshee|Square Foot|Spider Lady"],
 ["71011","Series 15",2016,"r","Farmer|Astronaut|Frightening Knight|Clumsy Guy|Tribal Woman|Flying Warrior|Faun|Animal Control|Janitor|Ballerina|Laser Mech|Kendo Fighter|Shark Suit Guy|Wrestling Champion|Jewel Thief|Queen"],
 ["71012","Disney Series 1",2016,"l","Stitch|Pizza Planet Alien|Buzz Lightyear|Aladdin|Genie|Maleficent|Alice|Cheshire Cat|Daisy Duck|Donald Duck|Minnie Mouse|Mickey Mouse|Mr. Incredible|Syndrome|Peter Pan|Captain Hook|Ursula|Ariel"],
@@ -205,7 +228,7 @@ const RAW = [
 ["71025","Series 19",2019,"r","Video Game Champ|Shower Guy|Fright Knight|Monkey King|Programmer|Mummy Queen|Jungle Explorer|Firefighter|Dogsitter|Pizza Costume Guy|Galactic Bounty Hunter|Gardener|Rugby Player|Fox Costume Girl|Bear Costume Guy|Mountain Biker"],
 ["71026","DC Super Heroes",2020,"l","Mister Miracle|Wonder Woman|Aquaman|Stargirl|Sinestro|Cheetah|Superman|Green Lantern (Simon Baz)|Cyborg|Batman|Huntress|Metamorpho|Joker|Bumblebee|Flash (Jay Garrick)|Bat-Mite"],
 ["71027","Series 20",2020,"r","Piñata Boy|Breakdancer|Pea Pod Costume Girl|Tournament Knight|Pirate Girl|Space Fan|Llama Costume Girl|Viking|Super Warrior|Martial Arts Boy|Athlete|Sea Rescuer|Brick Costume Guy|80s Musician|Pyjama Girl|Drone Boy"],
-["71028","Harry Potter Series 2",2020,"l","Harry Potter|Albus Dumbledore|Ron Weasley|Luna Lovegood|Griphook|Lily Potter|James Potter|Ginny Weasley|Fred Weasley|George Weasley|Bellatrix Lestrange|Kingsley Shacklebolt|Moaning Myrtle|Professor Sprout|Neville Longbottom|Nymphadora Tonks"],
+["71028","Harry Potter Series 2",2020,"l","Harry Potter|Albus Dumbledore|Ron Weasley|Luna Lovegood|Griphook|Lily Potter|James Potter|Ginny Weasley|Fred Weasley|George Weasley|Bellatrix Lestrange|Kingsley Shacklebolt|Moaning Myrtle|Professor Sprout|Neville Longbottom|Hermione Granger"],
 ["71029","Series 21",2021,"r","Paddle Surfer|Violin Kid|Shipwreck Survivor|Ladybug Girl|Pug Costume Guy|Centaur Warrior|Beekeeper|Ancient Warrior|Airplane Girl|Space Police Guy|Alien|Cabaret Singer"],
 ["71030","Looney Tunes",2021,"l","Lola Bunny|Bugs Bunny|Wile E. Coyote|Road Runner|Tweety|Sylvester|Daffy Duck|Speedy Gonzales|Tasmanian Devil|Marvin the Martian|Petunia Pig|Porky Pig"],
 ["71031","Marvel Studios",2021,"l","Scarlet Witch|Vision|Monica Rambeau|Captain America (Sam Wilson)|Bucky Barnes|Loki|Sylvie|Captain Carter|Star-Lord T'Challa|Zombie Captain America|Zombie Hunter Spidey|Gamora"],
@@ -224,9 +247,11 @@ const RAW = [
 ["71052","Series 29",2026,"r","Football Goalkeeper|Marine Biologist|Tuba Player|Unicorn Elf|Monster Hunter|Robot T. rex|Chocolatier|Boba Cup Fan|Bionicle Cosplayer|Mysterious Ronin|Cute Witch|Trash Monster"],
 ["71053","Shrek",2026,"l","Shrek|Fiona & Donkey|Pinocchio|Gingy|Dragon|Puss in Boots|Thelonious|Big Bad Wolf|Merlin|Lord Farquaad|Fairy Godmother|Prince Charming"]
 ];
+// Rebrickable set-variant per figure (same order as RAW) – images: cdn.rebrickable.com
+const RB = {"8683":"5,2,3,4,1,6,7,8,9,10,11,12,13,14,15,16","8684":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","8803":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","8804":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","8805":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","8827":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","8831":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","8909":"9,1,6,4,5,7,3,2,8","8833":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71000":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71001":"19,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71002":"1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,12","71004":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71005":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71007":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71008":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71009":"1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,11","71010":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71011":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71012":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18","71014":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71013":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71017":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20","71018":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71019":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20","71020":"1,2,3,4,5,6,7,8,9,10,11,12,14,13,15,16,17,18,19,20","71021":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17","71022":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22","71023":"1,2,10,5,4,8,6,3,14,16,17,19,18,12,9,11,15,13,20,7","71024":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18","71025":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71026":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71027":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16","71028":"1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,3","71029":"1,2,3,4,5,6,7,8,9,10,11,12","71030":"1,2,3,4,5,6,7,8,9,10,11,12","71031":"1,2,3,5,4,6,7,10,11,9,8,12","71032":"1,2,3,4,5,6,7,8,9,10,11,12","71033":"1,2,3,4,5,6,7,8,10,9,11,12","71034":"6,5,10,12,11,1,7,4,3,2,9,8","71037":"3,4,8,5,1,12,7,9,2,11,10,6","71038":"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18","71039":"1,2,3,4,5,6,7,8,9,10,11,12","71045":"1,2,3,4,5,6,7,8,9,10,11,12","71046":"1,2,3,4,5,6,7,8,9,10,11,12","71047":"5,8,2,10,1,12,9,4,3,6,11,7","71048":"1,2,3,4,5,6,7,8,9,10,11,12","71050":"9,4,2,6,1,10,12,5,8,11,7,3","71051":"11,4,2,7,10,6,12,1,3,9,8,5","71052":"9,2,8,12,4,1,7,5,3,11,10,6","71053":"4,6,8,3,5,2,1,9,7,10,11,12"};
 const SERIES = RAW.map(([set,name,year,cat,figs,extra={}],i)=>({
   id:set, set, name, year, cat: cat==="r"?"regular":"licensed", order:i, note:extra.x||"",
-  figs: figs.split("|").map((n,j)=>({id:set+"-"+(j+1), no:j+1, name:n, note:(extra.n||{})[j+1]||""}))
+  figs: figs.split("|").map((n,j)=>({id:set+"-"+(j+1), no:j+1, name:n, note:(extra.n||{})[j+1]||"", rb: RB[set] ? set+"-"+RB[set].split(",")[j] : ""}))
 }));
 const FIGS = {}; SERIES.forEach(s=>s.figs.forEach(f=>FIGS[f.id]={...f, series:s}));
 const TOTAL = Object.keys(FIGS).length;
@@ -234,7 +259,7 @@ const TOTAL = Object.keys(FIGS).length;
 // ---------- state ----------
 let state = {owned:{}, wish:{}, updated:0};
 const LS = "cmf-album-v1", UI = "cmf-album-ui-v1";
-let ui = {open:{}, cat:"all", status:"all", sort:"new"};
+let ui = {open:{}, cat:"all", status:"all", sort:"new", img:true};
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 const cached = lsGet(LS); if(cached && cached.owned) state = sanitize(cached);
@@ -331,7 +356,8 @@ function render(){
       html+=`<div class="sbody">${filtering?"":`<div class="sactions"><button class="btn" data-act="all">Alle als vorhanden markieren</button><button class="btn danger" data-act="clear">Serie zurücksetzen</button></div>`}<div class="grid" style="${filtering?"margin-top:12px":""}">`;
       for(const f of figs){
         const c=count(f.id), w=!!state.wish[f.id];
-        html+=`<div class="fig${c>1?" dup":c?" own":""}" data-f="${f.id}">
+        const pic = f.rb ? `<div class="pic" data-act="zoom" style="cursor:zoom-in"><img src="https://cdn.rebrickable.com/media/thumbs/sets/${f.rb}.jpg/250x250p.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.remove()"><button class="zoom" data-act="zoom" aria-label="${esc(f.name)} groß anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg></button></div>` : "";
+        html+=`<div class="fig${c>1?" dup":c?" own":""}" data-f="${f.id}">${pic}
           <button class="tap" data-act="tick" aria-pressed="${c?"true":"false"}" aria-label="${esc(f.name)} ${c?"vorhanden":"fehlt"}"><span class="box">${c?"✓":f.no}</span><span class="fname">${esc(f.name)}${f.note?`<em>${esc(f.note)}</em>`:""}</span></button>
           <div class="frow">
             <div class="step"><button data-act="dec" aria-label="Eine weniger" ${c?"":"disabled"}>−</button><span title="Anzahl">${c}×</span><button data-act="inc" aria-label="Eine mehr">+</button></div>
@@ -342,6 +368,7 @@ function render(){
     }
     html+=`</section>`;
   }
+  list.classList.toggle("noimg", !ui.img);
   list.innerHTML = shown? html : `<div class="empty">Keine Figuren für diese Auswahl.</div>`;
   if(!$("tradePanel").hidden) renderTrade();
 }
@@ -365,6 +392,7 @@ list.addEventListener("click",e=>{
     case "inc": setCount(id, count(id)+1); break;
     case "dec": setCount(id, count(id)-1); break;
     case "wish": toggleWish(id); break;
+    case "zoom": openZoom(id); break;
     case "all": s.figs.forEach(f=>{ if(!state.owned[f.id]) state.owned[f.id]=1; delete state.wish[f.id]; }); commit(); toast(s.name+" komplett markiert"); break;
     case "clear": arm(b,"Wirklich zurücksetzen?",()=>{ s.figs.forEach(f=>{delete state.owned[f.id]; delete state.wish[f.id];}); commit(); toast(s.name+" zurückgesetzt"); }); break;
   }
@@ -408,6 +436,23 @@ $("btnImport").addEventListener("click",()=>{
   catch(e){ $("dataNote").textContent="Das ist keine gültige Sicherung. Füge den kompletten Text aus „Sicherung erzeugen“ ein."; }
 });
 $("btnReset").addEventListener("click",e=>arm(e.currentTarget,"Wirklich alles löschen?",()=>{ state={owned:{},wish:{},updated:0}; commit(); toast("Sammlung zurückgesetzt"); }));
+
+const btnImg=$("btnImg");
+function syncImgBtn(){ btnImg.setAttribute("aria-pressed",String(ui.img)); btnImg.textContent = ui.img ? "Bilder an" : "Bilder aus"; }
+syncImgBtn();
+btnImg.addEventListener("click",()=>{ ui.img=!ui.img; lsSet(UI,ui); syncImgBtn(); render(); });
+
+const lb=$("lb");
+function openZoom(id){
+  const f=FIGS[id]; if(!f||!f.rb) return;
+  $("lbImg").src="https://cdn.rebrickable.com/media/sets/"+f.rb+".jpg"; $("lbImg").alt=f.name;
+  $("lbName").textContent=f.name; $("lbSeries").textContent=f.series.name+" · Nr. "+f.no+" · "+f.series.set;
+  $("lbLink").href="https://rebrickable.com/sets/"+f.rb+"/";
+  lb.hidden=false; $("lbClose").focus();
+}
+function closeZoom(){ lb.hidden=true; $("lbImg").removeAttribute("src"); }
+lb.addEventListener("click",e=>{ if(e.target===lb||e.target.closest("#lbClose")) closeZoom(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!lb.hidden) closeZoom(); });
 
 let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1800); }
 
