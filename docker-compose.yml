@@ -1,0 +1,15 @@
+services:
+  minifig-album:
+    image: ghcr.io/qu3ntyn83/minifig-album:latest
+    # Lokal bauen statt Image ziehen: nächste Zeile einkommentieren
+    # build: .
+    container_name: minifig-album
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "3020:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - TZ=Europe/Berlin
+      - KEEP_BACKUPS=30

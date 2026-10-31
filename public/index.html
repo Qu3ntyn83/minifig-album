@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5c400">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23f5c400'/%3E%3C/svg%3E">
+<title>Minifiguren-Sammelalbum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: like the folded checklist leaflet inside every blind bag — one card per series, numbered tiles to tick off */
+:root{
+  --bg:#f3f4f7; --surface:#ffffff; --surface-2:#e9ebf1; --ink:#161b2e; --muted:#5d6479; --line:#d6d9e3;
+  --yellow:#f5c400; --yellow-ink:#3a2e00; --own:#1f7a4d; --own-bg:#e3f3ea; --dup:#b5530f; --dup-bg:#fbebdc; --wish:#c22a4c; --wish-bg:#fbe4ea;
+  --focus:#2f5bd3;
+  --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11141f; --surface:#1a1f2e; --surface-2:#242a3c; --ink:#eceef5; --muted:#9aa1b6; --line:#2f364b;
+  --yellow:#f5c400; --yellow-ink:#2a2100; --own:#5fd39a; --own-bg:#173326; --dup:#f2a35e; --dup-bg:#3a2614; --wish:#ff7f9c; --wish-bg:#3a1a24; --focus:#8fb0ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11141f; --surface:#1a1f2e; --surface-2:#242a3c; --ink:#eceef5; --muted:#9aa1b6; --line:#2f364b;
+  --yellow:#f5c400; --yellow-ink:#2a2100; --own:#5fd39a; --own-bg:#173326; --dup:#f2a35e; --dup-bg:#3a2614; --wish:#ff7f9c; --wish-bg:#3a1a24; --focus:#8fb0ff; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,4.5vw,2.6rem);line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 .stud{display:inline-block;width:.62em;height:.62em;border-radius:50%;background:var(--yellow);box-shadow:inset 0 -.08em 0 rgba(0,0,0,.18);margin-right:.25em;vertical-align:.04em}
+.sub{color:var(--muted);margin:6px 0 0;font-size:.92rem}
+.sync{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.ok i{background:var(--own)} .sync.busy i{background:var(--yellow)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.05;font-variant-numeric:tabular-nums}
+.stat span{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.stat.main{background:var(--yellow);border-color:var(--yellow);color:var(--yellow-ink)}
+.stat.main span{color:var(--yellow-ink);opacity:.8}
+.bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--own);border-radius:3px}
+.stat.main .bar{background:rgba(0,0,0,.14);margin-top:8px}.stat.main .bar i{background:var(--yellow-ink)}
+.tools{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--line);margin-bottom:14px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.search{flex:1 1 220px;min-width:0;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0 10px}
+.search input{border:0;background:transparent;padding:9px 0;width:100%;min-width:0;outline:none}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px}
+.seg button{border:0;background:transparent;padding:6px 10px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.88rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:.88rem}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.danger{color:var(--wish)}
+.series{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.series.done{border-color:var(--own)}
+.shead{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border:0;background:transparent;text-align:left;cursor:pointer}
+.setno{font-family:var(--mono);font-size:.78rem;background:var(--surface-2);border-radius:6px;padding:4px 7px;color:var(--muted)}
+.series.done .setno{background:var(--own);color:var(--surface)}
+.stitle{min-width:0}
+.stitle strong{display:block;font-family:var(--display);font-weight:600;font-size:1.05rem;line-height:1.2}
+.stitle small{color:var(--muted);font-size:.8rem}
+.stitle .bar{margin-top:6px;max-width:280px}
+.scount{font-variant-numeric:tabular-nums;font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.chev{width:18px;height:18px;transition:transform .15s;color:var(--muted)}
+.series.open .chev{transform:rotate(180deg)}
+.badge{font-size:.7rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--own-bg);color:var(--own)}
+.sbody{padding:0 14px 14px;border-top:1px dashed var(--line)}
+.sactions{display:flex;gap:8px;flex-wrap:wrap;padding:10px 0;justify-content:flex-end}
+.sactions .btn{padding:5px 10px;font-size:.8rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+.fig{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:9px;background:var(--bg);min-width:0;min-height:96px}
+.fig.own{background:var(--own-bg);border-color:var(--own)}
+.fig.dup{background:var(--dup-bg);border-color:var(--dup)}
+.fig .tap{flex:1;display:flex;gap:9px;align-items:flex-start;padding:10px 10px 6px;border:0;background:transparent;text-align:left;cursor:pointer;min-width:0;border-radius:9px 9px 0 0}
+.box{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);background:var(--surface)}
+.fig.own .box,.fig.dup .box{background:var(--own);border-color:var(--own);color:var(--surface)}
+.fig.dup .box{background:var(--dup);border-color:var(--dup)}
+.fname{font-weight:500;font-size:.88rem;line-height:1.25;overflow-wrap:anywhere;min-width:0}
+.fname em{display:block;font-style:normal;font-size:.72rem;color:var(--muted);margin-top:2px}
+.frow{display:flex;justify-content:space-between;align-items:center;padding:0 6px 6px 10px;gap:6px}
+.step{display:flex;align-items:center;gap:2px;font-variant-numeric:tabular-nums;font-size:.82rem}
+.step button,.heart{width:28px;height:28px;border-radius:6px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--muted)}
+.step button:hover,.heart:hover{background:var(--surface-2)}
+.step button:disabled{opacity:.3;cursor:default;background:transparent}
+.step span{min-width:2.2em;text-align:center;font-weight:600}
+.heart svg{width:17px;height:17px}
+.heart[aria-pressed="true"]{color:var(--wish)}
+.heart[aria-pressed="true"] svg path{fill:currentColor}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.group-h{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;color:var(--muted);margin:20px 2px 8px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.panel h2{font-family:var(--display);font-weight:600;font-size:1.2rem;margin:0 0 4px}
+.panel p{margin:0 0 10px;color:var(--muted);font-size:.88rem;max-width:65ch}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+textarea{width:100%;min-height:180px;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:10px;font-family:var(--mono);font-size:.78rem;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.note{font-size:.82rem;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:.88rem;font-weight:500;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stitle .bar{max-width:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1><span class="stud" aria-hidden="true"></span>Minifiguren-Sammelalbum</h1>
+      <p class="sub">Alle LEGO Collectible-Minifigures-Serien von 2010 bis heute. Tippe eine Figur an, um sie abzuhaken.</p>
+    </div>
+    <div class="sync" id="sync"><i></i><span>Lädt…</span></div>
+  </header>
+
+  <section class="stats" aria-label="Fortschritt">
+    <div class="stat main"><span>Gesammelt</span><b id="stOwn">0 / 0</b><div class="bar"><i id="stBar" style="width:0"></i></div></div>
+    <div class="stat"><span>Serien komplett</span><b id="stDone">0</b></div>
+    <div class="stat"><span>Doppelte</span><b id="stDup">0</b></div>
+    <div class="stat"><span>Wunschliste</span><b id="stWish">0</b></div>
+  </section>
+
+  <div class="tools">
+    <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Figur oder Serie suchen…" aria-label="Suche"></label>
+    <div class="seg" role="group" aria-label="Serientyp">
+      <button data-cat="all" aria-pressed="true">Alle</button><button data-cat="regular" aria-pressed="false">Nummeriert</button><button data-cat="licensed" aria-pressed="false">Lizenz</button>
+    </div>
+    <select id="status" aria-label="Status-Filter">
+      <option value="all">Jeder Status</option><option value="missing">Fehlt mir</option><option value="own">Habe ich</option><option value="dup">Doppelt</option><option value="wish">Wunschliste</option>
+    </select>
+    <select id="sort" aria-label="Sortierung">
+      <option value="new">Neueste zuerst</option><option value="old">Älteste zuerst</option><option value="progress">Fortschritt</option>
+    </select>
+    <button class="btn" id="btnTrade">Tauschliste</button>
+    <button class="btn" id="btnData">Sichern</button>
+  </div>
+
+  <section class="panel" id="tradePanel" hidden>
+    <h2>Tauschliste</h2>
+    <p>Zum Kopieren in Foren, Kleinanzeigen oder Chats. Gesucht listet zuerst deine Wunschliste, danach alle fehlenden Figuren aus Serien, die du angefangen hast.</p>
+    <div class="cols">
+      <div><strong>Biete (Doppelte)</strong><textarea id="tOffer" readonly></textarea><div class="row"><button class="btn" data-copy="tOffer">Kopieren</button></div></div>
+      <div><strong>Suche</strong><textarea id="tWant" readonly></textarea><div class="row"><button class="btn" data-copy="tWant">Kopieren</button></div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="dataPanel" hidden>
+    <h2>Sammlung sichern</h2>
+    <p>Deine Sammlung wird automatisch auf dem Server gespeichert und ist auf jedem Gerät gleich. Zusätzlich kannst du sie hier als Text sichern oder eine Sicherung einspielen.</p>
+    <textarea id="dataText" aria-label="Sicherung als JSON" placeholder='{"owned":{...},"wish":{...}}'></textarea>
+    <div class="row">
+      <button class="btn" id="btnExport">Sicherung erzeugen und kopieren</button>
+      <button class="btn primary" id="btnImport">Sicherung einspielen</button>
+      <button class="btn danger" id="btnReset">Alles zurücksetzen</button>
+      <span class="note" id="dataNote"></span>
+    </div>
+  </section>
+
+  <main id="list" aria-live="polite"></main>
+
+  <footer>Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// [set, name, year, category, figures separated by |, optional note map]
+const RAW = [
+["8683","Series 1",2010,"r","Zombie|Cheerleader|Caveman|Clown|Tribal Hunter|Skater|Robot|Demolition Dummy|Magician|Super Wrestler|Nurse|Ninja|Spaceman|Forestman|Deep Sea Diver|Cowboy"],
+["8684","Series 2",2010,"r","Maraca Man|Spartan Warrior|Ringmaster|Witch|Vampire|Traffic Cop|Explorer|Lifeguard|Mime|Weight Lifter|Pop Star|Skier|Disco Dude|Karate Master|Surfer|Pharaoh"],
+["8803","Series 3",2011,"r","Fisherman|Pilot|Tribal Chief|Samurai Warrior|Snowboarder|Space Villain|Sumo Wrestler|Mummy|Elf|Tennis Player|Race Car Driver|Gorilla Suit Guy|Space Alien|Hula Dancer|Rapper|Baseball Player"],
+["8804","Series 4",2011,"r","Lawn Gnome|Kimono Girl|Musketeer|Punk Rocker|Surfer Girl|Viking|The Monster|Hockey Player|Street Skater|Sailor|Soccer Player|Werewolf|Hazmat Guy|Artist|Ice Skater|Crazy Scientist"],
+["8805","Series 5",2011,"r","Graduate|Gladiator|Royal Guard|Eskimo|Cave Woman|Lizard Man|Zookeeper|Lumberjack|Small Clown|Fitness Instructor|Detective|Evil Dwarf|Boxer|Egyptian Queen|Gangster|Snowboarder Guy"],
+["8827","Series 6",2011,"r","Classic Alien|Highland Battler|Sleepyhead|Lady Liberty|Bandit|Flamenco Dancer|Clockwork Robot|Minotaur|Leprechaun|Roman Soldier|Surgeon|Skater Girl|Intergalactic Girl|Butcher|Mechanic|Genie"],
+["8831","Series 7",2012,"r","Swimming Champion|Aztec Warrior|Bunny Suit Guy|Bride|Ocean King|Bagpiper|Daredevil|Galaxy Patrol|Tennis Ace|Jungle Boy|Hippie|Computer Programmer|Viking Woman|Evil Knight|Rocker Girl|Grandma Visitor"],
+["8909","Team GB",2012,"l","Agile Archer|Brawny Boxer|Flexible Gymnast|Judo Fighter|Tactical Tennis Player|Wondrous Weightlifter|Relay Runner|Stealth Swimmer|Horseback Rider",{x:"Nur in Großbritannien erschienen"}],
+["8833","Series 8",2012,"r","Evil Robot|Conquistador|Lederhosen Guy|Cowgirl|Football Player|Diver|Downhill Skier|Businessman|Fairy|Santa|Vampire Bat|DJ|Red Cheerleader|Thespian|Pirate Captain|Alien Villainess"],
+["71000","Series 9",2013,"r","Waiter|Cyclops|Hollywood Starlet|Heroic Knight|Roman Emperor|Policeman|Chicken Suit Guy|Roller Derby Girl|Fortune Teller|Judge|Alien Avenger|Mermaid|Battle Mech|Mr. Good and Evil|Forest Maiden|Plumber"],
+["71001","Series 10",2013,"r","Mr. Gold|Librarian|Medusa|Roman Commander|Warrior Woman|Tomahawk Warrior|Skydiver|Bumblebee Girl|Grandpa|Paintball Player|Sea Captain|Sad Clown|Revolutionary Soldier|Baseball Fielder|Trendsetter|Decorator|Motorcycle Mechanic",{n:{1:"limitiert auf 5.000 Stück"}}],
+["71002","Series 11",2013,"r","Barbarian|Scarecrow|Pretzel Girl|Evil Mech|Island Warrior|Gingerbread Man|Holiday Elf|Yeti|Mountain Climber|Welder|Scientist|Diner Waitress|Grandma|Constable|Lady Robot|Saxophone Player"],
+["71004","The LEGO Movie",2014,"l","Calamity Drone|President Business|Hard Hat Emmet|Wild West Wyldstyle|Abraham Lincoln|Mrs. Scratchen-Post|Bad Cop / Good Cop|William Shakespeare|Gail the Construction Worker|Larry the Barista|Velma Staplebot|Taco Tuesday Guy|\"Where Are My Pants?\" Guy|Wiley Fusebot|Panda Guy|Marsha Queen of the Mermaids"],
+["71005","The Simpsons",2014,"l","Homer Simpson|Bart Simpson|Marge Simpson|Lisa Simpson|Maggie Simpson|Grampa Simpson|Ned Flanders|Krusty the Clown|Milhouse Van Houten|Ralph Wiggum|Apu Nahasapeemapetilon|Nelson Muntz|Itchy|Scratchy|Chief Wiggum|Mr. Burns"],
+["71007","Series 12",2014,"r","Wizard|Hun Warrior|Fairytale Princess|Video Game Guy|Battle Goddess|Space Miner|Lifeguard|Prospector|Jester|Dino Tracker|Pizza Delivery Man|Rock Star|Swashbuckler|Piggy Guy|Genie Girl|Spooky Girl"],
+["71008","Series 13",2015,"r","Classic King|Sheriff|Unicorn Girl|Snake Charmer|Goblin|Paleontologist|Alien Trooper|Egyptian Warrior|Carpenter|Evil Wizard|Fencer|Samurai|Disco Diva|Hot Dog Guy|Lady Cyclops|Galaxy Trooper"],
+["71009","The Simpsons Series 2",2015,"l","Date Night Homer|Date Night Marge|Lisa with Snowball II|Maggie with Santa's Little Helper|Bartman|Fallout Boy Milhouse|Comic Book Guy|Martin Prince|Professor Frink|Hans Moleman|Patty and Selma|Groundskeeper Willie|Edna Krabappel|Waylon Smithers|Dr. Hibbert"],
+["71010","Series 14 – Monsters",2015,"r","Wolf Guy|Zombie Pirate|Monster Scientist|Wacky Witch|Plant Monster|Fly Monster|Specter|Zombie Cheerleader|Tiger Woman|Gargoyle|Skeleton Guy|Zombie Rocker|Zombie Businessman|Banshee|Square Foot|Spider Lady"],
+["71011","Series 15",2016,"r","Farmer|Astronaut|Frightening Knight|Clumsy Guy|Tribal Woman|Flying Warrior|Faun|Animal Control|Janitor|Ballerina|Laser Mech|Kendo Fighter|Shark Suit Guy|Wrestling Champion|Jewel Thief|Queen"],
+["71012","Disney Series 1",2016,"l","Stitch|Pizza Planet Alien|Buzz Lightyear|Aladdin|Genie|Maleficent|Alice|Cheshire Cat|Daisy Duck|Donald Duck|Minnie Mouse|Mickey Mouse|Mr. Incredible|Syndrome|Peter Pan|Captain Hook|Ursula|Ariel"],
+["71014","DFB – Die Mannschaft",2016,"l","Joachim Löw|Manuel Neuer|Jérôme Boateng|Mats Hummels|Benedikt Höwedes|Shkodran Mustafi|Bastian Schweinsteiger|Mesut Özil|Thomas Müller|Toni Kroos|Sami Khedira|André Schürrle|Marco Reus|Christoph Kramer|Mario Götze|Max Kruse",{x:"Nur in Europa erschienen"}],
+["71013","Series 16",2016,"r","Ice Queen|Desert Warrior|Cyborg|Cute Little Devil|Spooky Boy|Hiker|Wildlife Photographer|Kickboxer|Scallywag Pirate|Penguin Boy|Rogue|Dog Show Winner|Mariachi|Spy|Banana Guy|Babysitter"],
+["71017","The LEGO Batman Movie",2017,"l","Lobster-Lovin' Batman|Glam Metal Batman|Fairy Batman|Clan of the Cave Batman|Vacation Batman|Barbara Gordon|Commissioner Gordon|Arkham Asylum Joker|Dick Grayson|Pink Power Batgirl|Red Hood|Eraser|Nurse Harley Quinn|Orca|Zodiac Master|Catman|March Harriet|Calculator|King Tut|Mime"],
+["71018","Series 17",2017,"r","Pro Surfer|Strongman|Gourmet Chef|Corncob Guy|Veterinarian|Hot Dog Vendor|Butterfly Girl|Roman Gladiator|Connoisseur|Battle Dwarf|Retro Space Hero|Yuppie|Rocket Boy|Dance Instructor|Elf Maiden|Highwayman"],
+["71019","The LEGO Ninjago Movie",2017,"l","Kai Kendo|Spinjitzu Training Nya|Lloyd (Green Ninja)|Master Wu|Garmadon|Jay Walker|Lloyd Garmadon|Cole|Misako|Zane|Shark Army General #1|Shark Army Octopus|Shark Army Angler|Shark Army Great White|Flashback Garmadon|Volcano Garmadon|Gong & Guitar Rocker|GPL Tech|Sushi Chef|N-POP Girl"],
+["71020","The LEGO Batman Movie Series 2",2018,"l","Disco Harley Quinn|Disco Alfred Pennyworth|Clock King|Hugo Strange|Mermaid Batman|Swimsuit Batman|Vacation Joker|Vacation Robin|Vacation Batgirl|Vacation Alfred Pennyworth|Bat-Merch Batgirl|Killer Moth|Zan|Jayna|Apache Chief|Jor-El|General Zod|Doctor Phosphorus|Black Canary|Black Vulcan"],
+["71021","Series 18 – Party",2018,"r","Elephant Costume Girl|Brick Suit Guy|Brick Suit Girl|Party Clown|Firework Guy|Birthday Party Girl|Dragon Suit Guy|1978 Police Officer|Spider Suit Boy|Cake Guy|Cactus Girl|Cat Costume Girl|Race Car Guy|Flowerpot Girl|Cowboy Costume Guy|Birthday Party Boy|Unicorn Guy",{n:{8:"selten, ca. 1 pro Karton"}}],
+["71022","Harry Potter & Fantastic Beasts",2018,"l","Harry Potter|Hermione Granger|Ron Weasley|Draco Malfoy|Luna Lovegood|Neville Longbottom|Cho Chang|Dean Thomas|Lord Voldemort|Dobby|Professor Trelawney|Cedric Diggory|Professor Flitwick|Mad-Eye Moody|Harry Potter (Invisibility Cloak)|Albus Dumbledore|Newt Scamander|Tina Goldstein|Jacob Kowalski|Queenie Goldstein|Credence Barebone|Percival Graves"],
+["71023","The LEGO Movie 2",2019,"l","Awesome Remix Emmet|Battle-Ready Lucy|Swamp Creature|Crayon Girl|Giraffe Guy|Watermelon Dude|Sherry Scratchen-Post & Scarfield|Apocalypseburg Benny|Vest Friend Rex|Dorothy Gale|Cowardly Lion|Tin Man|Scarecrow|Gone Golfin' President Business|Flashback Lucy|Candy Rapper|Kitty Pop|Apocalypseburg Abraham Lincoln|Unikitty|Hula Lula"],
+["71024","Disney Series 2",2019,"l","Vintage Mickey|Vintage Minnie|Huey|Dewey|Louie|Scrooge McDuck|Chip|Dale|Elsa|Anna|Jafar|Jasmine|Hades|Hercules|Sally|Jack Skellington|Edna Mode|Frozone"],
+["71025","Series 19",2019,"r","Video Game Champ|Shower Guy|Fright Knight|Monkey King|Programmer|Mummy Queen|Jungle Explorer|Firefighter|Dogsitter|Pizza Costume Guy|Galactic Bounty Hunter|Gardener|Rugby Player|Fox Costume Girl|Bear Costume Guy|Mountain Biker"],
+["71026","DC Super Heroes",2020,"l","Mister Miracle|Wonder Woman|Aquaman|Stargirl|Sinestro|Cheetah|Superman|Green Lantern (Simon Baz)|Cyborg|Batman|Huntress|Metamorpho|Joker|Bumblebee|Flash (Jay Garrick)|Bat-Mite"],
+["71027","Series 20",2020,"r","Piñata Boy|Breakdancer|Pea Pod Costume Girl|Tournament Knight|Pirate Girl|Space Fan|Llama Costume Girl|Viking|Super Warrior|Martial Arts Boy|Athlete|Sea Rescuer|Brick Costume Guy|80s Musician|Pyjama Girl|Drone Boy"],
+["71028","Harry Potter Series 2",2020,"l","Harry Potter|Albus Dumbledore|Ron Weasley|Luna Lovegood|Griphook|Lily Potter|James Potter|Ginny Weasley|Fred Weasley|George Weasley|Bellatrix Lestrange|Kingsley Shacklebolt|Moaning Myrtle|Professor Sprout|Neville Longbottom|Nymphadora Tonks"],
+["71029","Series 21",2021,"r","Paddle Surfer|Violin Kid|Shipwreck Survivor|Ladybug Girl|Pug Costume Guy|Centaur Warrior|Beekeeper|Ancient Warrior|Airplane Girl|Space Police Guy|Alien|Cabaret Singer"],
+["71030","Looney Tunes",2021,"l","Lola Bunny|Bugs Bunny|Wile E. Coyote|Road Runner|Tweety|Sylvester|Daffy Duck|Speedy Gonzales|Tasmanian Devil|Marvin the Martian|Petunia Pig|Porky Pig"],
+["71031","Marvel Studios",2021,"l","Scarlet Witch|Vision|Monica Rambeau|Captain America (Sam Wilson)|Bucky Barnes|Loki|Sylvie|Captain Carter|Star-Lord T'Challa|Zombie Captain America|Zombie Hunter Spidey|Gamora"],
+["71032","Series 22",2022,"r","Robot Repair Tech|Chili Costume Fan|Troubadour|Snow Guardian|Horse and Groom|Figure Skating Champion|Night Protector|Forest Elf|Birdwatcher|Raccoon Costume Fan|Space Creature|Wheelchair Racer"],
+["71033","The Muppets",2022,"l","Rowlf the Dog|Dr. Bunsen Honeydew|Beaker|Gonzo|Kermit the Frog|Miss Piggy|Fozzie Bear|Animal|Statler|Waldorf|Swedish Chef|Janice"],
+["71034","Series 23",2022,"r","Cardboard Robot|Holiday Elf|Ferry Captain|Green Dragon Costume|Knight of the Yellow Castle|Nutcracker|Popcorn Costume|Reindeer Costume|Snowman|Sugar Fairy|Turkey Costume|Wolf Costume"],
+["71037","Series 24",2023,"r","Brown Astronaut and Spacebaby|Carrot Mascot|Conservationist|Falconer|Football Referee|Newspaper Kid|Orc|Potter|Robot Warrior|Rockin' Horse Rider|Rococo Aristocrat|T. rex Costume Fan"],
+["71038","Disney 100",2023,"l","Oswald the Lucky Rabbit|Pinocchio|Jiminy Cricket|Sorcerer's Apprentice Mickey|Tiana|Dr. Facilier|Queen of Hearts|Aurora|Mulan|Ernesto de la Cruz|Miguel Rivera|Pocahontas|Cruella de Vil|Robin Hood|Prince John|Stitch 626|Baymax|The Queen"],
+["71039","Marvel Studios Series 2",2023,"l","Agatha Harkness|Moon Knight|Mr. Knight|Werewolf by Night|She-Hulk|Hawkeye|Kate Bishop|Goliath|Echo|Beast|Storm|Wolverine"],
+["71045","Series 25",2024,"r","Film Noir Detective|E-Sports Gamer|Vampire Knight|Sprinter|Goatherd|Mushroom Sprite|Fitness Instructor|Triceratops Costume Fan|Harpy|Train Kid|Fierce Barbarian|Pet Groomer"],
+["71046","Series 26 – Space",2024,"r","Spacewalking Astronaut|Imposter|Alien Tourist|Retro Space Heroine|M-Tron Powerlifter|Nurse Android|Flying Saucer Costume Fan|Ice Planet Explorer|Robot Butler|Alien Beetlezoid|Orion|Blacktron Mutant"],
+["71047","Dungeons & Dragons",2024,"l","Halfling Druid|Strahd von Zarovich|Gith Warlock|The Lady of Pain|Dwarf Barbarian|Tasha the Witch Queen|Elf Bard|Dragonborn Paladin|Tiefling Sorcerer|Aarakocra Ranger|Szass Tam|Mind Flayer"],
+["71048","Series 27",2025,"r","Hamster Costume Fan|Wolfpack Beastmaster|Jetpack Racer|Astronomer Kid|Plush Toy Collector|Pterodactyl Costume Fan|Longboarder|Bogeyman|Cupid|Pirate Quartermaster|Cat Lover|Steampunk Inventor"],
+["71050","Spider-Man: Across the Spider-Verse",2025,"l","Spider-Byte|Spider-Gwen|Spider-Punk|Spider-Man India & Spider-Cat|Miles Morales|Peter B. Parker & Mayday|Werewolf Spider-Man|Spider-Man 2099 & Lyla|Sun-Spider|Web-Slinger & Spider-Horse|Cyborg Spider-Man|Prowler (Earth-42)"],
+["71051","Series 28 – Animals",2026,"r","Lion Costume|Monkey Costume|Cat Costume|Dalmatian Costume|Bunny Costume|Koala Costume|Parrot Costume|Peacock Costume|Goldfish Costume|Dolphin Costume|Crocodile Costume|Frog Costume"],
+["71052","Series 29",2026,"r","Football Goalkeeper|Marine Biologist|Tuba Player|Unicorn Elf|Monster Hunter|Robot T. rex|Chocolatier|Boba Cup Fan|Bionicle Cosplayer|Mysterious Ronin|Cute Witch|Trash Monster"],
+["71053","Shrek",2026,"l","Shrek|Fiona & Donkey|Pinocchio|Gingy|Dragon|Puss in Boots|Thelonious|Big Bad Wolf|Merlin|Lord Farquaad|Fairy Godmother|Prince Charming"]
+];
+const SERIES = RAW.map(([set,name,year,cat,figs,extra={}],i)=>({
+  id:set, set, name, year, cat: cat==="r"?"regular":"licensed", order:i, note:extra.x||"",
+  figs: figs.split("|").map((n,j)=>({id:set+"-"+(j+1), no:j+1, name:n, note:(extra.n||{})[j+1]||""}))
+}));
+const FIGS = {}; SERIES.forEach(s=>s.figs.forEach(f=>FIGS[f.id]={...f, series:s}));
+const TOTAL = Object.keys(FIGS).length;
+
+// ---------- state ----------
+let state = {owned:{}, wish:{}, updated:0};
+const LS = "cmf-album-v1", UI = "cmf-album-ui-v1";
+let ui = {open:{}, cat:"all", status:"all", sort:"new"};
+function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const cached = lsGet(LS); if(cached && cached.owned) state = sanitize(cached);
+const savedUi = lsGet(UI); if(savedUi) ui = {...ui, ...savedUi};
+
+function sanitize(d){
+  const out={owned:{},wish:{},updated:Number(d.updated)||0};
+  for(const [k,v] of Object.entries(d.owned||{})){ const n=Math.min(99,Math.max(0,parseInt(v,10)||0)); if(FIGS[k]&&n>0) out.owned[k]=n; }
+  for(const k of Object.keys(d.wish||{})){ if(FIGS[k]&&d.wish[k]) out.wish[k]=1; }
+  return out;
+}
+
+// ---------- sync (server API, localStorage as offline cache) ----------
+const syncEl=document.getElementById("sync");
+function setSync(cls,txt){syncEl.className="sync "+cls; syncEl.querySelector("span").textContent=txt;}
+let online=false, writing=false, dirty=false, timer=null;
+function commit(){
+  state.updated=Date.now(); lsSet(LS,state); render();
+  dirty=true; clearTimeout(timer); timer=setTimeout(flush,600); setSync("busy","Speichert…");
+}
+async function flush(){
+  if(writing||!dirty) return;
+  writing=true; dirty=false;
+  try{
+    const r=await fetch("api/state",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});
+    if(r.status===409){ state=sanitize(await r.json()); lsSet(LS,state); render(); }
+    else if(!r.ok) throw new Error(r.status);
+    online=true; setSync("ok","Auf dem Server gespeichert");
+  }catch(e){ dirty=true; online=false; setSync("","Offline – lokal gesichert"); setTimeout(flush,15000); }
+  writing=false; if(dirty&&online) flush();
+}
+async function pull(){
+  if(writing||dirty) return;
+  try{
+    const r=await fetch("api/state",{cache:"no-store"}); if(!r.ok) throw new Error(r.status);
+    const d=await r.json(); online=true;
+    if((Number(d.updated)||0) > state.updated){ state=sanitize(d); lsSet(LS,state); render(); }
+    else if(state.updated > (Number(d.updated)||0)){ dirty=true; flush(); return; }
+    setSync("ok","Auf dem Server gespeichert");
+  }catch(e){ online=false; setSync("","Offline – lokal gesichert"); }
+}
+pull();
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) pull(); });
+setInterval(()=>{ if(!document.hidden) pull(); },30000);
+
+// ---------- actions ----------
+const count = id => state.owned[id]||0;
+function setCount(id,n){ n=Math.max(0,Math.min(99,n)); if(n) {state.owned[id]=n; delete state.wish[id];} else delete state.owned[id]; commit(); }
+function toggleWish(id){ if(state.wish[id]) delete state.wish[id]; else state.wish[id]=1; commit(); }
+
+// ---------- render ----------
+const list=document.getElementById("list");
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const heartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.5 3 5 6.4 5c2 0 3.2 1.1 3.9 2.2.3.5 1.1.5 1.4 0C12.4 6.1 13.6 5 15.6 5 19 5 20.7 8.5 19.2 11.4 17 15.6 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+
+function seriesStats(s){ const got=s.figs.filter(f=>count(f.id)>0).length; return {got, total:s.figs.length, done:got===s.figs.length}; }
+function matchStatus(f){
+  const c=count(f.id);
+  switch(ui.status){case "missing":return c===0;case "own":return c>0;case "dup":return c>1;case "wish":return !!state.wish[f.id];default:return true;}
+}
+
+function render(){
+  // stats
+  let own=0,dup=0; for(const v of Object.values(state.owned)){own++; dup+=v-1;}
+  const done=SERIES.filter(s=>seriesStats(s).done).length;
+  $("stOwn").textContent=own+" / "+TOTAL; $("stBar").style.width=(own/TOTAL*100).toFixed(1)+"%";
+  $("stDone").textContent=done+" / "+SERIES.length; $("stDup").textContent=dup; $("stWish").textContent=Object.keys(state.wish).length;
+
+  const q=norm($("q").value.trim());
+  let arr=SERIES.filter(s=>ui.cat==="all"||s.cat===ui.cat);
+  if(ui.sort==="new") arr=[...arr].sort((a,b)=>b.order-a.order);
+  else if(ui.sort==="old") arr=[...arr].sort((a,b)=>a.order-b.order);
+  else arr=[...arr].sort((a,b)=>{const x=seriesStats(a),y=seriesStats(b);return (y.got/y.total)-(x.got/x.total)||b.order-a.order;});
+
+  const filtering = q || ui.status!=="all";
+  let html="", shown=0;
+  for(const s of arr){
+    const seriesHit = q && (norm(s.name).includes(q)||s.set.includes(q));
+    const figs=s.figs.filter(f=>matchStatus(f) && (!q||seriesHit||norm(f.name).includes(q)));
+    if(filtering && !figs.length) continue;
+    shown++;
+    const st=seriesStats(s); const open = filtering || ui.open[s.id];
+    html+=`<section class="series${st.done?" done":""}${open?" open":""}" data-s="${s.id}">
+      <button class="shead" data-act="toggle" aria-expanded="${open?"true":"false"}">
+        <span class="setno">${s.set}</span>
+        <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${s.figs.length} Figuren · ${s.cat==="regular"?"Nummerierte Serie":"Lizenzserie"}${s.note?" · "+esc(s.note):""}</small>
+          <span class="bar" aria-hidden="true"><i style="width:${(st.got/st.total*100).toFixed(1)}%"></i></span></span>
+        <span class="scount">${st.done?'<span class="badge">Komplett</span>':""}${st.got}/${st.total}
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+      </button>`;
+    if(open){
+      html+=`<div class="sbody">${filtering?"":`<div class="sactions"><button class="btn" data-act="all">Alle als vorhanden markieren</button><button class="btn danger" data-act="clear">Serie zurücksetzen</button></div>`}<div class="grid" style="${filtering?"margin-top:12px":""}">`;
+      for(const f of figs){
+        const c=count(f.id), w=!!state.wish[f.id];
+        html+=`<div class="fig${c>1?" dup":c?" own":""}" data-f="${f.id}">
+          <button class="tap" data-act="tick" aria-pressed="${c?"true":"false"}" aria-label="${esc(f.name)} ${c?"vorhanden":"fehlt"}"><span class="box">${c?"✓":f.no}</span><span class="fname">${esc(f.name)}${f.note?`<em>${esc(f.note)}</em>`:""}</span></button>
+          <div class="frow">
+            <div class="step"><button data-act="dec" aria-label="Eine weniger" ${c?"":"disabled"}>−</button><span title="Anzahl">${c}×</span><button data-act="inc" aria-label="Eine mehr">+</button></div>
+            ${c?"":`<button class="heart" data-act="wish" aria-pressed="${w}" aria-label="Wunschliste">${heartSvg}</button>`}
+          </div></div>`;
+      }
+      html+=`</div></div>`;
+    }
+    html+=`</section>`;
+  }
+  list.innerHTML = shown? html : `<div class="empty">Keine Figuren für diese Auswahl.</div>`;
+  if(!$("tradePanel").hidden) renderTrade();
+}
+
+// confirm-by-second-tap for destructive buttons
+let armed=null;
+function arm(btn,label,fn){
+  if(armed===btn){ armed=null; fn(); return; }
+  if(armed) armed.textContent=armed.dataset.orig;
+  btn.dataset.orig=btn.textContent; btn.textContent=label; armed=btn;
+  setTimeout(()=>{ if(armed===btn){ btn.textContent=btn.dataset.orig; armed=null; } },3500);
+}
+
+list.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const sEl=b.closest("[data-s]"), s=SERIES.find(x=>x.id===sEl.dataset.s);
+  const fEl=b.closest("[data-f]"), id=fEl&&fEl.dataset.f;
+  switch(b.dataset.act){
+    case "toggle": ui.open[s.id]=!ui.open[s.id]; lsSet(UI,ui); render(); break;
+    case "tick": setCount(id, count(id)?0:1); break;
+    case "inc": setCount(id, count(id)+1); break;
+    case "dec": setCount(id, count(id)-1); break;
+    case "wish": toggleWish(id); break;
+    case "all": s.figs.forEach(f=>{ if(!state.owned[f.id]) state.owned[f.id]=1; delete state.wish[f.id]; }); commit(); toast(s.name+" komplett markiert"); break;
+    case "clear": arm(b,"Wirklich zurücksetzen?",()=>{ s.figs.forEach(f=>{delete state.owned[f.id]; delete state.wish[f.id];}); commit(); toast(s.name+" zurückgesetzt"); }); break;
+  }
+});
+
+// toolbar
+$("q").addEventListener("input",render);
+document.querySelectorAll(".seg button").forEach(b=>{
+  b.setAttribute("aria-pressed", String(b.dataset.cat===ui.cat));
+  b.addEventListener("click",()=>{ ui.cat=b.dataset.cat; document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); lsSet(UI,ui); render(); });
+});
+$("status").value=ui.status; $("sort").value=ui.sort;
+$("status").addEventListener("change",e=>{ui.status=e.target.value; lsSet(UI,ui); render();});
+$("sort").addEventListener("change",e=>{ui.sort=e.target.value; lsSet(UI,ui); render();});
+$("btnTrade").addEventListener("click",()=>{ const p=$("tradePanel"); p.hidden=!p.hidden; $("dataPanel").hidden=true; if(!p.hidden){renderTrade(); p.scrollIntoView({behavior:"smooth",block:"nearest"});} });
+$("btnData").addEventListener("click",()=>{ const p=$("dataPanel"); p.hidden=!p.hidden; $("tradePanel").hidden=true; });
+
+function renderTrade(){
+  const bySeries=(ids,fmt)=>{ const g={}; ids.forEach(id=>{const f=FIGS[id];(g[f.series.id]=g[f.series.id]||[]).push(f);});
+    return SERIES.filter(s=>g[s.id]).map(s=>`${s.name} (${s.set}):\n`+g[s.id].sort((a,b)=>a.no-b.no).map(fmt).join("\n")).join("\n\n"); };
+  const dups=Object.keys(state.owned).filter(id=>state.owned[id]>1);
+  $("tOffer").value = dups.length? bySeries(dups,f=>`  ${f.no}. ${f.name} – ${state.owned[f.id]-1}×`) : "Noch keine doppelten Figuren.";
+  const wish=Object.keys(state.wish);
+  const started=SERIES.filter(s=>{const st=seriesStats(s);return st.got>0&&!st.done;});
+  const missing=[]; started.forEach(s=>s.figs.forEach(f=>{ if(!count(f.id)&&!state.wish[f.id]) missing.push(f.id); }));
+  let t="";
+  if(wish.length) t+="WUNSCHLISTE\n"+bySeries(wish,f=>`  ${f.no}. ${f.name}`);
+  if(missing.length) t+=(t?"\n\n":"")+"FEHLT IN ANGEFANGENEN SERIEN\n"+bySeries(missing,f=>`  ${f.no}. ${f.name}`);
+  $("tWant").value = t || "Nichts gesucht. Markiere Figuren auf der Wunschliste oder fang eine Serie an.";
+}
+
+async function copyText(text, el){
+  try{ await navigator.clipboard.writeText(text); toast("Kopiert"); }
+  catch(e){ if(el){el.focus(); el.select();} toast("Text markiert – jetzt kopieren"); }
+}
+document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>{const el=$(b.dataset.copy); copyText(el.value, el);}));
+$("btnExport").addEventListener("click",()=>{ const el=$("dataText"); el.value=JSON.stringify({app:"cmf-album",version:1,owned:state.owned,wish:state.wish,exported:new Date().toISOString()},null,1); copyText(el.value, el); $("dataNote").textContent=""; });
+$("btnImport").addEventListener("click",()=>{
+  try{ const d=JSON.parse($("dataText").value); if(!d||typeof d!=="object"||!d.owned) throw 0;
+    state=sanitize(d); commit(); $("dataNote").textContent=`Eingespielt: ${Object.keys(state.owned).length} Figuren.`; toast("Sicherung eingespielt"); }
+  catch(e){ $("dataNote").textContent="Das ist keine gültige Sicherung. Füge den kompletten Text aus „Sicherung erzeugen“ ein."; }
+});
+$("btnReset").addEventListener("click",e=>arm(e.currentTarget,"Wirklich alles löschen?",()=>{ state={owned:{},wish:{},updated:0}; commit(); toast("Sammlung zurückgesetzt"); }));
+
+let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1800); }
+
+render();
+</script>
+
+</body>
+</html>
