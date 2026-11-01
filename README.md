@@ -90,3 +90,7 @@ Oder automatisch mit einem Container-Updater wie Watchtower.
 
 Den Ordner `data/` in dein Backup aufnehmen. Zusätzlich gibt es in der App unter
 „Sichern“ einen Export als Text.
+
+## Lizenz
+
+[MIT](LICENSE) – Torsten Weise
