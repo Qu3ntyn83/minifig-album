@@ -1,8 +1,9 @@
-# In /opt/caddy/Caddyfile einfügen, dann: docker exec caddy caddy reload --config /etc/caddy/Caddyfile
-# Passwort-Hash erzeugen: docker exec caddy caddy hash-password --plaintext 'DEIN-PASSWORT'
-minifigs-home.powerscripting.de {
+# Beispiel für Caddy: in dein Caddyfile übernehmen und Platzhalter ersetzen.
+# Passwort-Hash erzeugen:  docker exec caddy caddy hash-password --plaintext 'DEIN-PASSWORT'
+# Danach neu laden:        docker exec caddy caddy reload --config /etc/caddy/Caddyfile
+minifigs.example.com {
 	basic_auth {
-		torsten <HASH-HIER-EINFÜGEN>
+		BENUTZER <HASH-HIER-EINFÜGEN>
 	}
-	reverse_proxy 192.168.178.41:3020
+	reverse_proxy <SERVER-IP>:3020
 }
