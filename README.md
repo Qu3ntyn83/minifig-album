@@ -1,5 +1,7 @@
 # Minifiguren-Sammelalbum
 
+**Deutsch** · [English](#english)
+
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-unterst%C3%BCtzen-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/quentyn83)
 
 Sammel-Tracker für alle LEGO Collectible-Minifigures-Serien (51 Serien, 775 Figuren, Stand 10/2026),
@@ -138,5 +140,141 @@ Wenn dir das Projekt hilft und du mir einen Kaffee ausgeben möchtest, freue ich
 <a href="https://buymeacoffee.com/quentyn83"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="45"></a>
 
 ## Lizenz
+
+[MIT](LICENSE) – Torsten Weise
+
+---
+
+<a id="english"></a>
+
+# Minifigure Collection (English)
+
+[Deutsch](#minifiguren-sammelalbum) · **English**
+
+A collection tracker for every LEGO Collectible Minifigures series (51 series, 775 figures,
+as of 10/2026), with images, wishlist, duplicates, trade list, BrickLink prices and automatic
+detection of new series.
+
+One container, no database: your collection lives in `data/state.json` in a bind mount,
+plus daily backups in `data/backups/` (last 30 days).
+
+## Screenshots
+
+The screenshots in the German section above show the app with a sample collection and sample
+prices. The interface switches between German and English with one tap.
+
+## Features
+
+- Every series from Series 1 (2010) to today, numbered and licensed
+- Tap to tick off, count duplicates, wishlist
+- A photo of every figure (Rebrickable) with a large view
+- BrickLink prices for used figures: average sales over the last 6 months and average current
+  listings, plus collection value and cost to complete each series
+- Hide series or single figures you don't want to collect
+- Trade list ready to copy, export and import of your collection
+- New series appear automatically as soon as they are listed in the Rebrickable catalog
+- Works on phone and desktop, light and dark theme
+- Interface in German or English (switch at the top right, default follows the browser)
+
+## Installation
+
+Every push to `main` makes GitHub Actions build the image and publish it as
+`ghcr.io/qu3ntyn83/minifig-album:latest`.
+
+```bash
+sudo git clone https://github.com/Qu3ntyn83/minifig-album.git /opt/minifig-album
+cd /opt/minifig-album
+sudo mkdir -p data && sudo chown -R 1000:1000 data
+sudo docker compose pull && sudo docker compose up -d
+curl -s http://localhost:3020/healthz   # -> {"ok":true}
+```
+
+The app then runs at `http://<server-ip>:3020`. Change port and path in `docker-compose.yml`.
+
+## Access from the internet
+
+The app has no login of its own. If it should be reachable from the internet, put a reverse
+proxy with authentication in front of it. `Caddyfile.snippet` has an example for Caddy with
+`basic_auth`:
+
+```bash
+docker exec caddy caddy hash-password --plaintext 'YOUR-PASSWORD'
+# Fill in hash, domain, user and target in the snippet, then add it to your Caddyfile
+docker exec caddy caddy reload --config /etc/caddy/Caddyfile
+```
+
+If Caddy runs in the same Docker network, you can use `reverse_proxy minifig-album:3000`
+instead of the IP and drop the port mapping.
+
+## BrickLink prices (optional)
+
+For each figure the app shows two values from the BrickLink price guide, both for **used**
+condition and for the minifigure without stand (BrickLink number such as `col312`):
+
+- **Sold**: average price of sales over the last 6 months
+- **Listed**: average price of current listings
+
+It also shows your collection value and roughly what completing each series would cost.
+
+Setup:
+
+1. Log in to BrickLink and create API access at
+   https://www.bricklink.com/v2/api/register_consumer.page
+2. Create an access token. Enter the public IP your server uses to reach the internet.
+3. On the server:
+   ```bash
+   cd /opt/minifig-album && sudo cp .env.example .env && sudo nano .env   # enter the 4 values
+   sudo docker compose up -d
+   sudo docker logs -f minifig-album   # shows progress
+   ```
+
+If the log reports `TOKEN_IP_MISMATCHED`, it includes the IP BrickLink saw. Add that IP to
+your access token.
+
+The first run takes a little over half an hour (2 requests per figure, with a pause between
+them). After that, prices refresh weekly. BrickLink allows 5,000 requests per day; the app
+uses at most 4,000. The cache lives in `data/prices.json`.
+
+## New series
+
+Once a day the server checks the public Rebrickable catalog. When a new Collectible
+Minifigures series appears there (at least 6 single figures), it shows up in the app
+automatically, with images and, where Brickset has it, the BrickLink number for prices.
+The cache lives in `data/catalog.json`.
+
+- `CATALOG_SKIP`: set numbers to ignore (default: `71049`, the F1 race cars)
+- `CATALOG_CHECK_HOURS`: check interval in hours (default: 24)
+
+## Versions
+
+Besides `latest` there are fixed versions, e.g. `ghcr.io/qu3ntyn83/minifig-album:1.0.0`, or
+`:1.0` for all patch updates of a version. They are built from Git tags (`v1.0.0`).
+
+## Updating
+
+```bash
+cd /opt/minifig-album && sudo git pull && sudo docker compose pull && sudo docker compose up -d
+```
+
+Or automatically with a container updater such as Watchtower.
+
+## Backup
+
+Include the `data/` folder in your backups. The app also offers a text export under
+“Backup”.
+
+## Contributors
+
+- [Torsten Weise](https://github.com/Qu3ntyn83) (@Qu3ntyn83): idea, operation and development
+
+Bugs and wishes are welcome as an [issue](https://github.com/Qu3ntyn83/minifig-album/issues).
+
+## Support
+
+If the project helps you and you'd like to buy me a coffee, I'd be very happy:
+
+<a href="https://buymeacoffee.com/quentyn83"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="45"></a>
+
+## License
 
 [MIT](LICENSE) – Torsten Weise
