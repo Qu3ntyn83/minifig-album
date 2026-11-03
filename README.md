@@ -125,12 +125,6 @@ Oder automatisch mit einem Container-Updater wie Watchtower.
 Den Ordner `data/` in dein Backup aufnehmen. Zusätzlich gibt es in der App unter
 „Sichern“ einen Export als Text.
 
-## Unterstützen
-
-Wenn dir die App gefällt, freue ich mich über einen Kaffee:
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/quentyn83)
-
 ## Mitwirkende
 
 - [Torsten Weise](https://github.com/Qu3ntyn83) (@Qu3ntyn83): Idee, Betrieb und Weiterentwicklung
