@@ -34,6 +34,7 @@ plus tägliche Sicherungen unter `data/backups/` (die letzten 30 Tage).
 - Tauschliste zum Kopieren, Export und Import der Sammlung
 - Neue Serien erscheinen automatisch, sobald sie im Rebrickable-Katalog stehen
 - Für Handy und Desktop, mit hellem und dunklem Design
+- Oberfläche auf Deutsch oder Englisch (Umschalter oben rechts, Standard nach Browsersprache)
 
 ## Installation
 
@@ -106,6 +107,11 @@ BrickLink-Nummer für die Preise. Der Cache liegt in `data/catalog.json`.
 - `CATALOG_SKIP`: Setnummern, die ignoriert werden (Standard: `71049`, die F1-Rennwagen)
 - `CATALOG_CHECK_HOURS`: Prüfintervall in Stunden (Standard: 24)
 
+## Versionen
+
+Neben `latest` gibt es feste Versionen, z. B. `ghcr.io/qu3ntyn83/minifig-album:1.0.0`
+oder `:1.0` für alle Patch-Updates einer Version. Sie entstehen aus Git-Tags (`v1.0.0`).
+
 ## Update
 
 ```bash
@@ -118,6 +124,12 @@ Oder automatisch mit einem Container-Updater wie Watchtower.
 
 Den Ordner `data/` in dein Backup aufnehmen. Zusätzlich gibt es in der App unter
 „Sichern“ einen Export als Text.
+
+## Unterstützen
+
+Wenn dir die App gefällt, freue ich mich über einen Kaffee:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/quentyn83)
 
 ## Mitwirkende
 

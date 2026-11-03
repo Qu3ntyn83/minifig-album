@@ -34,6 +34,11 @@ header.top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justif
 h1{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,4.5vw,2.6rem);line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
 h1 .brick{display:inline-block;width:1.05em;height:auto;margin-right:.28em;vertical-align:-.08em}
 .sub{color:var(--muted);margin:6px 0 0;font-size:.92rem}
+.topright{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.lang{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px}
+.lang button{border:0;background:transparent;padding:4px 9px;border-radius:6px;cursor:pointer;font-weight:600;font-size:.78rem;letter-spacing:.04em;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+@media (max-width:640px){.topright{flex-direction:row-reverse;align-items:center;justify-content:space-between;width:100%}}
 .sync{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
 .sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .sync.ok i{background:var(--own)} .sync.busy i{background:var(--yellow)}
@@ -159,52 +164,52 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
   <header class="top">
     <div>
       <h1><svg class="brick" viewBox="0 0 120 104" aria-hidden="true"><rect x="12" y="6" width="22" height="16" rx="3" fill="#f5c400" stroke="#3a2e00" stroke-width="3"/><rect x="49" y="6" width="22" height="16" rx="3" fill="#f5c400" stroke="#3a2e00" stroke-width="3"/><rect x="86" y="6" width="22" height="16" rx="3" fill="#f5c400" stroke="#3a2e00" stroke-width="3"/><rect x="2" y="20" width="116" height="80" rx="5" fill="#f5c400" stroke="#3a2e00" stroke-width="3"/><path d="M47 45 C47 30 73 30 73 45 C73 56 60 57 60 69" fill="none" stroke="#3a2e00" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="60" cy="84" r="5.5" fill="#3a2e00"/></svg>Minifiguren-Sammelalbum</h1>
-      <p class="sub">Alle LEGO Collectible-Minifigures-Serien von 2010 bis heute. Tippe eine Figur an, um sie abzuhaken.</p>
+      <p class="sub" data-i18n="sub">Alle LEGO Collectible-Minifigures-Serien von 2010 bis heute. Tippe eine Figur an, um sie abzuhaken.</p>
     </div>
-    <div class="sync" id="sync"><i></i><span>Lädt…</span></div>
+    <div class="topright"><div class="lang" role="group" aria-label="Sprache / Language"><button data-lang="de" aria-pressed="true">DE</button><button data-lang="en" aria-pressed="false">EN</button></div><div class="sync" id="sync"><i></i><span data-i18n="loading">Lädt…</span></div></div>
   </header>
 
-  <section class="stats" aria-label="Fortschritt">
-    <div class="stat main"><span>Gesammelt</span><b id="stOwn">0 / 0</b><div class="bar"><i id="stBar" style="width:0"></i></div></div>
-    <div class="stat"><span>Serien komplett</span><b id="stDone">0</b></div>
-    <div class="stat"><span>Doppelte</span><b id="stDup">0</b></div>
-    <div class="stat"><span>Wunschliste</span><b id="stWish">0</b></div>
-    <div class="stat val" id="valCard" hidden><span>Wert gebraucht</span><b id="stVal">–</b><small id="stValNote"></small></div>
+  <section class="stats" data-i18n-aria="progress" aria-label="Fortschritt">
+    <div class="stat main"><span data-i18n="collected">Gesammelt</span><b id="stOwn">0 / 0</b><div class="bar"><i id="stBar" style="width:0"></i></div></div>
+    <div class="stat"><span data-i18n="seriesDone">Serien komplett</span><b id="stDone">0</b></div>
+    <div class="stat"><span data-i18n="dups">Doppelte</span><b id="stDup">0</b></div>
+    <div class="stat"><span data-i18n="wishlist">Wunschliste</span><b id="stWish">0</b></div>
+    <div class="stat val" id="valCard" hidden><span data-i18n="valueUsed">Wert gebraucht</span><b id="stVal">–</b><small id="stValNote"></small></div>
   </section>
 
   <div class="tools">
-    <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Figur oder Serie suchen…" aria-label="Suche"></label>
-    <div class="seg" role="group" aria-label="Serientyp">
-      <button data-cat="all" aria-pressed="true">Alle</button><button data-cat="regular" aria-pressed="false">Nummeriert</button><button data-cat="licensed" aria-pressed="false">Lizenz</button>
+    <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Figur oder Serie suchen…" data-i18n-ph="search" data-i18n-aria="searchLabel" aria-label="Suche"></label>
+    <div class="seg" role="group" data-i18n-aria="seriesType" aria-label="Serientyp">
+      <button data-cat="all" aria-pressed="true" data-i18n="catAll">Alle</button><button data-cat="regular" aria-pressed="false" data-i18n="catRegular">Nummeriert</button><button data-cat="licensed" aria-pressed="false" data-i18n="catLicensed">Lizenz</button>
     </div>
-    <select id="status" aria-label="Status-Filter">
-      <option value="all">Jeder Status</option><option value="missing">Fehlt mir</option><option value="own">Habe ich</option><option value="dup">Doppelt</option><option value="wish">Wunschliste</option>
+    <select id="status" data-i18n-aria="statusFilter" aria-label="Status-Filter">
+      <option value="all" data-i18n="stAll">Jeder Status</option><option value="missing" data-i18n="stMissing">Fehlt mir</option><option value="own" data-i18n="stOwn">Habe ich</option><option value="dup" data-i18n="stDup">Doppelt</option><option value="wish" data-i18n="wishlist">Wunschliste</option>
     </select>
-    <select id="sort" aria-label="Sortierung">
-      <option value="new">Neueste zuerst</option><option value="old">Älteste zuerst</option><option value="progress">Fortschritt</option>
+    <select id="sort" data-i18n-aria="sortLabel" aria-label="Sortierung">
+      <option value="new" data-i18n="sortNew">Neueste zuerst</option><option value="old" data-i18n="sortOld">Älteste zuerst</option><option value="progress" data-i18n="progress">Fortschritt</option>
     </select>
-    <button class="btn sw" id="btnImg" role="switch" aria-checked="true"><span class="track" aria-hidden="true"><span class="knob"></span></span>Bilder</button>
-    <button class="btn" id="btnTrade">Tauschliste</button>
-    <button class="btn" id="btnData">Sichern</button>
+    <button class="btn sw" id="btnImg" role="switch" aria-checked="true"><span class="track" aria-hidden="true"><span class="knob"></span></span><span data-i18n="images">Bilder</span></button>
+    <button class="btn" id="btnTrade" data-i18n="trade">Tauschliste</button>
+    <button class="btn" id="btnData" data-i18n="backup">Sichern</button>
   </div>
 
   <section class="panel" id="tradePanel" hidden>
-    <h2>Tauschliste</h2>
-    <p>Zum Kopieren in Foren, Kleinanzeigen oder Chats. Gesucht listet zuerst deine Wunschliste, danach alle fehlenden Figuren aus Serien, die du angefangen hast.</p>
+    <h2 data-i18n="trade">Tauschliste</h2>
+    <p data-i18n="tradeIntro">Zum Kopieren in Foren, Kleinanzeigen oder Chats. Gesucht listet zuerst deine Wunschliste, danach alle fehlenden Figuren aus Serien, die du angefangen hast.</p>
     <div class="cols">
-      <div><strong>Biete (Doppelte)</strong><textarea id="tOffer" readonly></textarea><div class="row"><button class="btn" data-copy="tOffer">Kopieren</button></div></div>
-      <div><strong>Suche</strong><textarea id="tWant" readonly></textarea><div class="row"><button class="btn" data-copy="tWant">Kopieren</button></div></div>
+      <div><strong data-i18n="offer">Biete (Doppelte)</strong><textarea id="tOffer" readonly></textarea><div class="row"><button class="btn" data-copy="tOffer" data-i18n="copy">Kopieren</button></div></div>
+      <div><strong data-i18n="want">Suche</strong><textarea id="tWant" readonly></textarea><div class="row"><button class="btn" data-copy="tWant" data-i18n="copy">Kopieren</button></div></div>
     </div>
   </section>
 
   <section class="panel" id="dataPanel" hidden>
-    <h2>Sammlung sichern</h2>
-    <p>Deine Sammlung wird automatisch auf dem Server gespeichert und ist auf jedem Gerät gleich. Zusätzlich kannst du sie hier als Text sichern oder eine Sicherung einspielen.</p>
-    <textarea id="dataText" aria-label="Sicherung als JSON" placeholder='{"owned":{...},"wish":{...}}'></textarea>
+    <h2 data-i18n="backupTitle">Sammlung sichern</h2>
+    <p data-i18n="backupIntro">Deine Sammlung wird automatisch auf dem Server gespeichert und ist auf jedem Gerät gleich. Zusätzlich kannst du sie hier als Text sichern oder eine Sicherung einspielen.</p>
+    <textarea id="dataText" data-i18n-aria="backupJson" aria-label="Sicherung als JSON" placeholder='{"owned":{...},"wish":{...}}'></textarea>
     <div class="row">
-      <button class="btn" id="btnExport">Sicherung erzeugen und kopieren</button>
-      <button class="btn primary" id="btnImport">Sicherung einspielen</button>
-      <button class="btn danger" id="btnReset">Alles zurücksetzen</button>
+      <button class="btn" id="btnExport" data-i18n="export">Sicherung erzeugen und kopieren</button>
+      <button class="btn primary" id="btnImport" data-i18n="import">Sicherung einspielen</button>
+      <button class="btn danger" id="btnReset" data-i18n="resetAll">Alles zurücksetzen</button>
       <span class="note" id="dataNote"></span>
     </div>
   </section>
@@ -212,13 +217,13 @@ footer{margin-top:28px;color:var(--muted);font-size:.78rem;max-width:70ch}
   <div class="ignbar" id="ignBar" hidden><span id="ignText"></span><button class="btn" id="ignToggle">Anzeigen</button></div>
   <main id="list" aria-live="polite"></main>
 
-  <footer>Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Bilder werden direkt von Rebrickable geladen. Preise: BrickLink-Preisführer, gebrauchte Minifigur ohne Ständer, wöchentlich aktualisiert. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
+  <footer data-i18n="footer">Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Bilder werden direkt von Rebrickable geladen. Preise: BrickLink-Preisführer, gebrauchte Minifigur ohne Ständer, wöchentlich aktualisiert. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.</footer>
 </div>
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbName">
   <div class="lb-card">
     <div class="plate"><img id="lbImg" alt=""></div>
     <div class="meta"><div><strong id="lbName"></strong><small id="lbSeries"></small><dl class="lbprice" id="lbPrice" hidden></dl></div>
-      <div class="row" style="margin:0"><a id="lbLink" href="#" target="_blank" rel="noopener">Rebrickable</a><a id="lbBl" href="#" target="_blank" rel="noopener" hidden>BrickLink</a><button class="btn" id="lbClose">Schließen</button></div></div>
+      <div class="row" style="margin:0"><a id="lbLink" href="#" target="_blank" rel="noopener">Rebrickable</a><a id="lbBl" href="#" target="_blank" rel="noopener" hidden>BrickLink</a><button class="btn" id="lbClose" data-i18n="close">Schließen</button></div></div>
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -233,10 +238,10 @@ const RAW = [
 ["8805","Series 5",2011,"r","Graduate|Gladiator|Royal Guard|Eskimo|Cave Woman|Lizard Man|Zookeeper|Lumberjack|Small Clown|Fitness Instructor|Detective|Evil Dwarf|Boxer|Egyptian Queen|Gangster|Snowboarder Guy"],
 ["8827","Series 6",2011,"r","Classic Alien|Highland Battler|Sleepyhead|Lady Liberty|Bandit|Flamenco Dancer|Clockwork Robot|Minotaur|Leprechaun|Roman Soldier|Surgeon|Skater Girl|Intergalactic Girl|Butcher|Mechanic|Genie"],
 ["8831","Series 7",2012,"r","Swimming Champion|Aztec Warrior|Bunny Suit Guy|Bride|Ocean King|Bagpiper|Daredevil|Galaxy Patrol|Tennis Ace|Jungle Boy|Hippie|Computer Programmer|Viking Woman|Evil Knight|Rocker Girl|Grandma Visitor"],
-["8909","Team GB",2012,"l","Agile Archer|Brawny Boxer|Flexible Gymnast|Judo Fighter|Tactical Tennis Player|Wondrous Weightlifter|Relay Runner|Stealth Swimmer|Horseback Rider",{x:"Nur in Großbritannien erschienen"}],
+["8909","Team GB",2012,"l","Agile Archer|Brawny Boxer|Flexible Gymnast|Judo Fighter|Tactical Tennis Player|Wondrous Weightlifter|Relay Runner|Stealth Swimmer|Horseback Rider",{x:"@ukOnly"}],
 ["8833","Series 8",2012,"r","Evil Robot|Conquistador|Lederhosen Guy|Cowgirl|Football Player|Diver|Downhill Skier|Businessman|Fairy|Santa|Vampire Bat|DJ|Red Cheerleader|Thespian|Pirate Captain|Alien Villainess"],
 ["71000","Series 9",2013,"r","Waiter|Cyclops|Hollywood Starlet|Heroic Knight|Roman Emperor|Policeman|Chicken Suit Guy|Roller Derby Girl|Fortune Teller|Judge|Alien Avenger|Mermaid|Battle Mech|Mr. Good and Evil|Forest Maiden|Plumber"],
-["71001","Series 10",2013,"r","Mr. Gold|Librarian|Medusa|Roman Commander|Warrior Woman|Tomahawk Warrior|Skydiver|Bumblebee Girl|Grandpa|Paintball Player|Sea Captain|Sad Clown|Revolutionary Soldier|Baseball Fielder|Trendsetter|Decorator|Motorcycle Mechanic",{n:{1:"limitiert auf 5.000 Stück"}}],
+["71001","Series 10",2013,"r","Mr. Gold|Librarian|Medusa|Roman Commander|Warrior Woman|Tomahawk Warrior|Skydiver|Bumblebee Girl|Grandpa|Paintball Player|Sea Captain|Sad Clown|Revolutionary Soldier|Baseball Fielder|Trendsetter|Decorator|Motorcycle Mechanic",{n:{1:"@mrGold"}}],
 ["71002","Series 11",2013,"r","Barbarian|Scarecrow|Pretzel Girl|Evil Mech|Island Warrior|Gingerbread Man|Holiday Elf|Yeti|Mountain Climber|Welder|Scientist|Diner Waitress|Grandma|Constable|Lady Robot|Saxophone Player"],
 ["71004","The LEGO Movie",2014,"l","Calamity Drone|President Business|Hard Hat Emmet|Wild West Wyldstyle|Abraham Lincoln|Mrs. Scratchen-Post|Bad Cop / Good Cop|William Shakespeare|Gail the Construction Worker|Larry the Barista|Velma Staplebot|Taco Tuesday Guy|\"Where Are My Pants?\" Guy|Wiley Fusebot|Panda Guy|Marsha Queen of the Mermaids"],
 ["71005","The Simpsons",2014,"l","Homer Simpson|Bart Simpson|Marge Simpson|Lisa Simpson|Maggie Simpson|Grampa Simpson|Ned Flanders|Krusty the Clown|Milhouse Van Houten|Ralph Wiggum|Apu Nahasapeemapetilon|Nelson Muntz|Itchy|Scratchy|Chief Wiggum|Mr. Burns"],
@@ -246,13 +251,13 @@ const RAW = [
 ["71010","Series 14 – Monsters",2015,"r","Wolf Guy|Zombie Pirate|Monster Scientist|Wacky Witch|Plant Monster|Fly Monster|Specter|Zombie Cheerleader|Tiger Woman|Gargoyle|Skeleton Guy|Zombie Rocker|Zombie Businessman|Banshee|Square Foot|Spider Lady"],
 ["71011","Series 15",2016,"r","Farmer|Astronaut|Frightening Knight|Clumsy Guy|Tribal Woman|Flying Warrior|Faun|Animal Control|Janitor|Ballerina|Laser Mech|Kendo Fighter|Shark Suit Guy|Wrestling Champion|Jewel Thief|Queen"],
 ["71012","Disney Series 1",2016,"l","Stitch|Pizza Planet Alien|Buzz Lightyear|Aladdin|Genie|Maleficent|Alice|Cheshire Cat|Daisy Duck|Donald Duck|Minnie Mouse|Mickey Mouse|Mr. Incredible|Syndrome|Peter Pan|Captain Hook|Ursula|Ariel"],
-["71014","DFB – Die Mannschaft",2016,"l","Joachim Löw|Manuel Neuer|Jérôme Boateng|Mats Hummels|Benedikt Höwedes|Shkodran Mustafi|Bastian Schweinsteiger|Mesut Özil|Thomas Müller|Toni Kroos|Sami Khedira|André Schürrle|Marco Reus|Christoph Kramer|Mario Götze|Max Kruse",{x:"Nur in Europa erschienen"}],
+["71014","DFB – Die Mannschaft",2016,"l","Joachim Löw|Manuel Neuer|Jérôme Boateng|Mats Hummels|Benedikt Höwedes|Shkodran Mustafi|Bastian Schweinsteiger|Mesut Özil|Thomas Müller|Toni Kroos|Sami Khedira|André Schürrle|Marco Reus|Christoph Kramer|Mario Götze|Max Kruse",{x:"@euOnly"}],
 ["71013","Series 16",2016,"r","Ice Queen|Desert Warrior|Cyborg|Cute Little Devil|Spooky Boy|Hiker|Wildlife Photographer|Kickboxer|Scallywag Pirate|Penguin Boy|Rogue|Dog Show Winner|Mariachi|Spy|Banana Guy|Babysitter"],
 ["71017","The LEGO Batman Movie",2017,"l","Lobster-Lovin' Batman|Glam Metal Batman|Fairy Batman|Clan of the Cave Batman|Vacation Batman|Barbara Gordon|Commissioner Gordon|Arkham Asylum Joker|Dick Grayson|Pink Power Batgirl|Red Hood|Eraser|Nurse Harley Quinn|Orca|Zodiac Master|Catman|March Harriet|Calculator|King Tut|Mime"],
 ["71018","Series 17",2017,"r","Pro Surfer|Strongman|Gourmet Chef|Corncob Guy|Veterinarian|Hot Dog Vendor|Butterfly Girl|Roman Gladiator|Connoisseur|Battle Dwarf|Retro Space Hero|Yuppie|Rocket Boy|Dance Instructor|Elf Maiden|Highwayman"],
 ["71019","The LEGO Ninjago Movie",2017,"l","Kai Kendo|Spinjitzu Training Nya|Lloyd (Green Ninja)|Master Wu|Garmadon|Jay Walker|Lloyd Garmadon|Cole|Misako|Zane|Shark Army General #1|Shark Army Octopus|Shark Army Angler|Shark Army Great White|Flashback Garmadon|Volcano Garmadon|Gong & Guitar Rocker|GPL Tech|Sushi Chef|N-POP Girl"],
 ["71020","The LEGO Batman Movie Series 2",2018,"l","Disco Harley Quinn|Disco Alfred Pennyworth|Clock King|Hugo Strange|Mermaid Batman|Swimsuit Batman|Vacation Joker|Vacation Robin|Vacation Batgirl|Vacation Alfred Pennyworth|Bat-Merch Batgirl|Killer Moth|Zan|Jayna|Apache Chief|Jor-El|General Zod|Doctor Phosphorus|Black Canary|Black Vulcan"],
-["71021","Series 18 – Party",2018,"r","Elephant Costume Girl|Brick Suit Guy|Brick Suit Girl|Party Clown|Firework Guy|Birthday Party Girl|Dragon Suit Guy|1978 Police Officer|Spider Suit Boy|Cake Guy|Cactus Girl|Cat Costume Girl|Race Car Guy|Flowerpot Girl|Cowboy Costume Guy|Birthday Party Boy|Unicorn Guy",{n:{8:"selten, ca. 1 pro Karton"}}],
+["71021","Series 18 – Party",2018,"r","Elephant Costume Girl|Brick Suit Guy|Brick Suit Girl|Party Clown|Firework Guy|Birthday Party Girl|Dragon Suit Guy|1978 Police Officer|Spider Suit Boy|Cake Guy|Cactus Girl|Cat Costume Girl|Race Car Guy|Flowerpot Girl|Cowboy Costume Guy|Birthday Party Boy|Unicorn Guy",{n:{8:"@rarePolice"}}],
 ["71022","Harry Potter & Fantastic Beasts",2018,"l","Harry Potter|Hermione Granger|Ron Weasley|Draco Malfoy|Luna Lovegood|Neville Longbottom|Cho Chang|Dean Thomas|Lord Voldemort|Dobby|Professor Trelawney|Cedric Diggory|Professor Flitwick|Mad-Eye Moody|Harry Potter (Invisibility Cloak)|Albus Dumbledore|Newt Scamander|Tina Goldstein|Jacob Kowalski|Queenie Goldstein|Credence Barebone|Percival Graves"],
 ["71023","The LEGO Movie 2",2019,"l","Awesome Remix Emmet|Battle-Ready Lucy|Swamp Creature|Crayon Girl|Giraffe Guy|Watermelon Dude|Sherry Scratchen-Post & Scarfield|Apocalypseburg Benny|Vest Friend Rex|Dorothy Gale|Cowardly Lion|Tin Man|Scarecrow|Gone Golfin' President Business|Flashback Lucy|Candy Rapper|Kitty Pop|Apocalypseburg Abraham Lincoln|Unikitty|Hula Lula"],
 ["71024","Disney Series 2",2019,"l","Vintage Mickey|Vintage Minnie|Huey|Dewey|Louie|Scrooge McDuck|Chip|Dale|Elsa|Anna|Jafar|Jasmine|Hades|Hercules|Sally|Jack Skellington|Edna Mode|Frozone"],
@@ -292,7 +297,7 @@ async function loadCatalog(){
     const d=await r.json(); let added=0;
     (d.series||[]).sort((a,b)=>a.set.localeCompare(b.set)).forEach(x=>{
       if(SERIES.some(s=>s.set===x.set)) return;
-      const ser={id:x.set,set:x.set,name:x.name,year:x.year,cat:x.cat==="regular"?"regular":"licensed",order:RAW.length+added,note:"automatisch erkannt",auto:true,
+      const ser={id:x.set,set:x.set,name:x.name,year:x.year,cat:x.cat==="regular"?"regular":"licensed",order:RAW.length+added,note:"@auto",auto:true,
         figs:x.figs.map((f,i)=>({id:f.id,no:i+1,name:f.name,note:"",rb:f.rb||""}))};
       SERIES.push(ser); ser.figs.forEach(f=>FIGS[f.id]={...f,series:ser}); added++;
     });
@@ -300,10 +305,26 @@ async function loadCatalog(){
   }catch(e){}
 }
 
+// ---------- language (DE/EN) ----------
+const I18N = {de:{"title": "Minifiguren-Sammelalbum", "sub": "Alle LEGO Collectible-Minifigures-Serien von 2010 bis heute. Tippe eine Figur an, um sie abzuhaken.", "loading": "Lädt…", "saving": "Speichert…", "saved": "Auf dem Server gespeichert", "offline": "Offline – lokal gesichert", "progress": "Fortschritt", "collected": "Gesammelt", "seriesDone": "Serien komplett", "dups": "Doppelte", "wishlist": "Wunschliste", "valueUsed": "Wert gebraucht", "search": "Figur oder Serie suchen…", "searchLabel": "Suche", "seriesType": "Serientyp", "catAll": "Alle", "catRegular": "Nummeriert", "catLicensed": "Lizenz", "statusFilter": "Status-Filter", "stAll": "Jeder Status", "stMissing": "Fehlt mir", "stOwn": "Habe ich", "stDup": "Doppelt", "sortLabel": "Sortierung", "sortNew": "Neueste zuerst", "sortOld": "Älteste zuerst", "images": "Bilder", "imgOff": "Bilder ausblenden", "imgOn": "Bilder einblenden", "trade": "Tauschliste", "backup": "Sichern", "tradeIntro": "Zum Kopieren in Foren, Kleinanzeigen oder Chats. Gesucht listet zuerst deine Wunschliste, danach alle fehlenden Figuren aus Serien, die du angefangen hast.", "offer": "Biete (Doppelte)", "want": "Suche", "copy": "Kopieren", "backupTitle": "Sammlung sichern", "backupIntro": "Deine Sammlung wird automatisch auf dem Server gespeichert und ist auf jedem Gerät gleich. Zusätzlich kannst du sie hier als Text sichern oder eine Sicherung einspielen.", "backupJson": "Sicherung als JSON", "export": "Sicherung erzeugen und kopieren", "import": "Sicherung einspielen", "resetAll": "Alles zurücksetzen", "close": "Schließen", "footer": "Daten: Wikipedia „Lego Minifigures (theme)“ und Brickset, Stand Oktober 2026. Bilder werden direkt von Rebrickable geladen. Preise: BrickLink-Preisführer, gebrauchte Minifigur ohne Ständer, wöchentlich aktualisiert. Figurennamen in der offiziellen englischen Schreibweise. LEGO ist eine Marke der LEGO Gruppe; dies ist ein privates Fan-Werkzeug.", "seriesBack": "{0} wieder aufgenommen", "seriesHidden": "{0} ausgeblendet", "restCost": "Rest ca. {0}", "priceLoading": "Preis lädt…", "soldTitle": "Ø Verkaufspreis gebraucht, letzte 6 Monate", "soldShort": "Verk.", "offerTitle": "Ø aktuelle Angebote gebraucht", "offerShort": "Ang.", "pricesLoaded": "Preise {0}/{1} geladen", "soldAvg6": "Verkauft Ø 6 Monate", "offerAvgNow": "Angebote Ø aktuell", "pcs": "{0} Stk.", "figs1": "{0} Figur", "figsN": "{0} Figuren", "nHidden": "{0} ausgeblendet", "regularSeries": "Nummerierte Serie", "licensedSeries": "Lizenzserie", "onWish": "{0} auf der Wunschliste", "hiddenBadge": "Ausgeblendet", "complete": "Komplett", "markAll": "Alle als vorhanden markieren", "resetSeries": "Serie zurücksetzen", "seriesInclude": "Serie wieder aufnehmen", "seriesExclude": "Serie will ich nicht", "noImage": "Noch kein Bild", "showLarge": "{0} groß anzeigen", "have": "vorhanden", "missing": "fehlt", "oneLess": "Eine weniger", "oneMore": "Eine mehr", "count": "Anzahl", "include": "Wieder aufnehmen", "exclude": "Will ich nicht", "series1": "{0} Serie", "seriesN": "{0} Serien", "and": "und", "hiddenSuffix": "ausgeblendet", "hide": "Verbergen", "show": "Anzeigen", "empty": "Keine Figuren für diese Auswahl.", "markedAll": "{0} komplett markiert", "confirmReset": "Wirklich zurücksetzen?", "seriesReset": "{0} zurückgesetzt", "noDups": "Noch keine doppelten Figuren.", "wishHead": "WUNSCHLISTE", "missingHead": "FEHLT IN ANGEFANGENEN SERIEN", "nothingWanted": "Nichts gesucht. Markiere Figuren auf der Wunschliste oder fang eine Serie an.", "copied": "Kopiert", "selectedCopy": "Text markiert – jetzt kopieren", "imported": "Eingespielt: {0} Figuren.", "importedToast": "Sicherung eingespielt", "importError": "Das ist keine gültige Sicherung. Füge den kompletten Text aus „Sicherung erzeugen“ ein.", "confirmResetAll": "Wirklich alles löschen?", "resetDone": "Sammlung zurückgesetzt", "no": "Nr.", "@ukOnly": "Nur in Großbritannien erschienen", "@euOnly": "Nur in Europa erschienen", "@mrGold": "limitiert auf 5.000 Stück", "@rarePolice": "selten, ca. 1 pro Karton", "@auto": "automatisch erkannt"},
+en:{"title": "Minifigure Collection", "sub": "Every LEGO Collectible Minifigures series from 2010 to today. Tap a figure to tick it off.", "loading": "Loading…", "saving": "Saving…", "saved": "Saved on the server", "offline": "Offline – saved locally", "progress": "Progress", "collected": "Collected", "seriesDone": "Series complete", "dups": "Duplicates", "wishlist": "Wishlist", "valueUsed": "Value (used)", "search": "Search figure or series…", "searchLabel": "Search", "seriesType": "Series type", "catAll": "All", "catRegular": "Numbered", "catLicensed": "Licensed", "statusFilter": "Status filter", "stAll": "Any status", "stMissing": "Missing", "stOwn": "Owned", "stDup": "Duplicate", "sortLabel": "Sort order", "sortNew": "Newest first", "sortOld": "Oldest first", "images": "Images", "imgOff": "Hide images", "imgOn": "Show images", "trade": "Trade list", "backup": "Backup", "tradeIntro": "Ready to paste into forums, marketplaces or chats. Wanted lists your wishlist first, then every missing figure from series you have started.", "offer": "For trade (duplicates)", "want": "Wanted", "copy": "Copy", "backupTitle": "Back up your collection", "backupIntro": "Your collection is saved on the server automatically and is the same on every device. You can also export it as text here or import a backup.", "backupJson": "Backup as JSON", "export": "Create and copy backup", "import": "Import backup", "resetAll": "Reset everything", "close": "Close", "footer": "Data: Wikipedia “Lego Minifigures (theme)” and Brickset, as of October 2026. Images load directly from Rebrickable. Prices: BrickLink price guide, used minifigure without stand, refreshed weekly. LEGO is a trademark of the LEGO Group; this is a private fan tool.", "seriesBack": "{0} included again", "seriesHidden": "{0} hidden", "restCost": "{0} to complete", "priceLoading": "Loading price…", "soldTitle": "Avg. sale price used, last 6 months", "soldShort": "Sold", "offerTitle": "Avg. current listings used", "offerShort": "Listed", "pricesLoaded": "Prices {0}/{1} loaded", "soldAvg6": "Sold avg. 6 months", "offerAvgNow": "Listed avg. now", "pcs": "{0} pcs", "figs1": "{0} figure", "figsN": "{0} figures", "nHidden": "{0} hidden", "regularSeries": "Numbered series", "licensedSeries": "Licensed series", "onWish": "{0} on your wishlist", "hiddenBadge": "Hidden", "complete": "Complete", "markAll": "Mark all as owned", "resetSeries": "Reset series", "seriesInclude": "Include series again", "seriesExclude": "I don't want this series", "noImage": "No image yet", "showLarge": "Show {0} large", "have": "owned", "missing": "missing", "oneLess": "One less", "oneMore": "One more", "count": "Count", "include": "Include again", "exclude": "Don't want", "series1": "{0} series", "seriesN": "{0} series", "and": "and", "hiddenSuffix": "hidden", "hide": "Hide", "show": "Show", "empty": "No figures match this selection.", "markedAll": "{0} marked complete", "confirmReset": "Really reset?", "seriesReset": "{0} reset", "noDups": "No duplicates yet.", "wishHead": "WISHLIST", "missingHead": "MISSING FROM STARTED SERIES", "nothingWanted": "Nothing wanted. Add figures to your wishlist or start a series.", "copied": "Copied", "selectedCopy": "Text selected – copy it now", "imported": "Imported: {0} figures.", "importedToast": "Backup imported", "importError": "That is not a valid backup. Paste the complete text from “Create and copy backup”.", "confirmResetAll": "Really delete everything?", "resetDone": "Collection reset", "no": "No.", "@ukOnly": "UK release only", "@euOnly": "Europe release only", "@mrGold": "limited to 5,000 pieces", "@rarePolice": "rare, about 1 per box", "@auto": "detected automatically"}};
+const LOCALE = {de:"de-DE", en:"en-IE"};
+let lang = "de";
+function t(key,...a){ let v=(I18N[lang]||I18N.de)[key]; if(v==null) v=I18N.de[key]; if(v==null) return key; return v.replace(/\{(\d)\}/g,(m,i)=>a[i]); }
+const note = n => n && n[0]==="@" ? t(n) : n;
+function applyLang(){
+  document.documentElement.lang=lang; document.title=t("title");
+  document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el=>el.setAttribute("aria-label",t(el.dataset.i18nAria)));
+  document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===lang)));
+  const h=document.querySelector("h1"); if(h&&h.lastChild&&h.lastChild.nodeType===3) h.lastChild.textContent=t("title");
+}
+
 // ---------- state ----------
 let state = {owned:{}, wish:{}, ignore:{series:{},figs:{}}, updated:0};
 const LS = "cmf-album-v1", UI = "cmf-album-ui-v1";
-let ui = {open:{}, cat:"all", status:"all", sort:"new", img:true, showIgnored:false};
+let ui = {open:{}, cat:"all", status:"all", sort:"new", img:true, showIgnored:false, lang:""};
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 
@@ -319,6 +340,8 @@ function sanitize(d){
 }
 const cached = lsGet(LS); if(cached && cached.owned) state = sanitize(cached);
 const savedUi = lsGet(UI); if(savedUi) ui = {...ui, ...savedUi};
+lang = I18N[ui.lang] ? ui.lang : ((navigator.language||"de").toLowerCase().startsWith("de") ? "de" : "en");
+applyLang();
 
 // ---------- sync (server API, localStorage as offline cache) ----------
 const syncEl=document.getElementById("sync");
@@ -326,7 +349,7 @@ function setSync(cls,txt){syncEl.className="sync "+cls; syncEl.querySelector("sp
 let online=false, writing=false, dirty=false, timer=null;
 function commit(){
   state.updated=Date.now(); lsSet(LS,state); render();
-  dirty=true; clearTimeout(timer); timer=setTimeout(flush,600); setSync("busy","Speichert…");
+  dirty=true; clearTimeout(timer); timer=setTimeout(flush,600); setSync("busy",t("saving"));
 }
 async function flush(){
   if(writing||!dirty) return;
@@ -335,8 +358,8 @@ async function flush(){
     const r=await fetch("api/state",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)});
     if(r.status===409){ state=sanitize(await r.json()); lsSet(LS,state); render(); }
     else if(!r.ok) throw new Error(r.status);
-    online=true; setSync("ok","Auf dem Server gespeichert");
-  }catch(e){ dirty=true; online=false; setSync("","Offline – lokal gesichert"); setTimeout(flush,15000); }
+    online=true; setSync("ok",t("saved"));
+  }catch(e){ dirty=true; online=false; setSync("",t("offline")); setTimeout(flush,15000); }
   writing=false; if(dirty&&online) flush();
 }
 async function pull(){
@@ -346,8 +369,8 @@ async function pull(){
     const d=await r.json(); online=true;
     if((Number(d.updated)||0) > state.updated){ state=sanitize(d); lsSet(LS,state); render(); }
     else if(state.updated > (Number(d.updated)||0)){ dirty=true; flush(); return; }
-    setSync("ok","Auf dem Server gespeichert");
-  }catch(e){ online=false; setSync("","Offline – lokal gesichert"); }
+    setSync("ok",t("saved"));
+  }catch(e){ online=false; setSync("",t("offline")); }
 }
 pull();
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden) pull(); });
@@ -355,7 +378,7 @@ setInterval(()=>{ if(!document.hidden) pull(); },30000);
 
 // ---------- BrickLink prices ----------
 let PR = {enabled:false, items:{}};
-const fmtEur = v => v==null ? "–" : new Intl.NumberFormat("de-DE",{style:"currency",currency:PR.currency||"EUR"}).format(v);
+const fmtEur = v => v==null ? "–" : new Intl.NumberFormat(LOCALE[lang],{style:"currency",currency:PR.currency||"EUR"}).format(v);
 const priceOf = id => (PR.items||{})[id] || null;
 async function loadPrices(){
   try{
@@ -372,7 +395,7 @@ const serIgnored = s => !!state.ignore.series[s.set];
 const figIgnored = f => !!state.ignore.figs[f.id] || !!state.ignore.series[(f.series||FIGS[f.id].series).set];
 const activeFigs = s => serIgnored(s) ? [] : s.figs.filter(f=>!state.ignore.figs[f.id]);
 function toggleIgnoreFig(id){ if(state.ignore.figs[id]) delete state.ignore.figs[id]; else { state.ignore.figs[id]=1; delete state.wish[id]; } commit(); }
-function toggleIgnoreSeries(s){ if(state.ignore.series[s.set]) { delete state.ignore.series[s.set]; toast(s.name+" wieder aufgenommen"); } else { state.ignore.series[s.set]=1; s.figs.forEach(f=>delete state.wish[f.id]); toast(s.name+" ausgeblendet"); } commit(); }
+function toggleIgnoreSeries(s){ if(state.ignore.series[s.set]) { delete state.ignore.series[s.set]; toast(t("seriesBack",s.name)); } else { state.ignore.series[s.set]=1; s.figs.forEach(f=>delete state.wish[f.id]); toast(t("seriesHidden",s.name)); } commit(); }
 function setCount(id,n){ n=Math.max(0,Math.min(99,n)); if(n) {state.owned[id]=n; delete state.wish[id];} else delete state.owned[id]; commit(); }
 function toggleWish(id){ if(state.wish[id]) delete state.wish[id]; else state.wish[id]=1; commit(); }
 
@@ -387,13 +410,14 @@ const heartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4
 function seriesCost(s){
   let sum=0,known=0,missing=0;
   for(const f of activeFigs(s)){ if(count(f.id)) continue; missing++; const p=priceOf(f.id); const v=p&&(p.o??p.s); if(v!=null){sum+=v;known++;} }
-  return known ? ` · Rest ca. ${fmtEur(Math.round(sum))}${known<missing?"+":""}` : "";
+  return known ? ` · ${t("restCost",fmtEur(Math.round(sum))+(known<missing?"+":""))}` : "";
 }
+function hiddenSummary(nS,nF){ const parts=[]; if(nS) parts.push(t(nS===1?"series1":"seriesN",nS)); if(nF) parts.push(t(nF===1?"figs1":"figsN",nF)); return parts.join(" "+t("and")+" ")+" "+t("hiddenSuffix"); }
 const wishN = s => activeFigs(s).filter(f=>state.wish[f.id]).length;
 function seriesStats(s){ const a=activeFigs(s); const got=a.filter(f=>count(f.id)>0).length; return {got, total:a.length, done:a.length>0&&got===a.length}; }
 function priceLine(id){
-  const p=priceOf(id); if(!p||p.t==null) return `<div class="price"><span>Preis lädt…</span></div>`;
-  return `<div class="price"><span title="Ø Verkaufspreis gebraucht, letzte 6 Monate">Verk. <b>${fmtEur(p.s)}</b></span><span title="Ø aktuelle Angebote gebraucht">Ang. <b>${fmtEur(p.o)}</b></span></div>`;
+  const p=priceOf(id); if(!p||p.t==null) return `<div class="price"><span>${t("priceLoading")}</span></div>`;
+  return `<div class="price"><span title="${t("soldTitle")}">${t("soldShort")} <b>${fmtEur(p.s)}</b></span><span title="${t("offerTitle")}">${t("offerShort")} <b>${fmtEur(p.o)}</b></span></div>`;
 }
 function matchStatus(f){
   if(figIgnored(f)) return ui.showIgnored && ui.status==="all";
@@ -413,7 +437,7 @@ function render(){
     let val=0, miss=0;
     for(const [id,n] of Object.entries(state.owned)){ const p=priceOf(id); if(p&&p.s!=null) val+=p.s*n; }
     $("valCard").hidden=false; $("stVal").textContent=fmtEur(Math.round(val));
-    $("stValNote").textContent = PR.loaded<PR.total ? `Preise ${PR.loaded}/${PR.total} geladen` : "Ø Verkäufe 6 Monate";
+    $("stValNote").textContent = PR.loaded<PR.total ? t("pricesLoaded",PR.loaded,PR.total) : t("soldAvg6");
     if(PR.error && !PR.loaded) $("stValNote").textContent="BrickLink: "+PR.error;
   } else $("valCard").hidden=true;
   $("stDone").textContent=done+" / "+activeSeries.length; $("stDup").textContent=dup; $("stWish").textContent=Object.keys(state.wish).length;
@@ -437,23 +461,23 @@ function render(){
     html+=`<section class="series${st.done?" done":""}${open?" open":""}${sIg?" ignored":""}" data-s="${s.id}">
       <button class="shead" data-act="toggle" aria-expanded="${open?"true":"false"}">
         <span class="setno">${s.set}</span>
-        <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${s.figs.length} Figuren${activeFigs(s).length<s.figs.length&&!sIg?` (${s.figs.length-activeFigs(s).length} ausgeblendet)`:""} · ${s.cat==="regular"?"Nummerierte Serie":"Lizenzserie"}${s.note?" · "+esc(s.note):""}${PR.enabled&&!st.done?seriesCost(s):""}</small>
+        <span class="stitle"><strong>${esc(s.name)}</strong><small>${s.year} · ${t("figsN",s.figs.length)}${activeFigs(s).length<s.figs.length&&!sIg?` (${t("nHidden",s.figs.length-activeFigs(s).length)})`:""} · ${s.cat==="regular"?t("regularSeries"):t("licensedSeries")}${s.note?" · "+esc(note(s.note)):""}${PR.enabled&&!st.done?seriesCost(s):""}</small>
           <span class="bar" aria-hidden="true"><i style="width:${(st.got/st.total*100).toFixed(1)}%"></i></span></span>
-        <span class="scount">${!sIg&&wishN(s)?`<span class="wishc" title="${wishN(s)} auf der Wunschliste" aria-label="${wishN(s)} auf der Wunschliste">${heartSvg}${wishN(s)}</span>`:""}${sIg?'<span class="badge off">Ausgeblendet</span>':st.done?'<span class="badge">Komplett</span>':`${st.got}/${st.total}`}
+        <span class="scount">${!sIg&&wishN(s)?`<span class="wishc" title="${t("onWish",wishN(s))}" aria-label="${t("onWish",wishN(s))}">${heartSvg}${wishN(s)}</span>`:""}${sIg?`<span class="badge off">${t("hiddenBadge")}</span>`:st.done?`<span class="badge">${t("complete")}</span>`:`${st.got}/${st.total}`}
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
       </button>`;
     if(open){
-      html+=`<div class="sbody">${filtering?"":`<div class="sactions">${sIg?"":`<button class="btn" data-act="all">Alle als vorhanden markieren</button><button class="btn danger" data-act="clear">Serie zurücksetzen</button>`}<button class="btn" data-act="ignser">${sIg?"Serie wieder aufnehmen":"Serie will ich nicht"}</button></div>`}<div class="grid" style="${filtering?"margin-top:12px":""}">`;
+      html+=`<div class="sbody">${filtering?"":`<div class="sactions">${sIg?"":`<button class="btn" data-act="all">${t("markAll")}</button><button class="btn danger" data-act="clear">${t("resetSeries")}</button>`}<button class="btn" data-act="ignser">${sIg?t("seriesInclude"):t("seriesExclude")}</button></div>`}<div class="grid" style="${filtering?"margin-top:12px":""}">`;
       for(const f of figs){
         const c=count(f.id), w=!!state.wish[f.id], ig=figIgnored(f);
-        const pic = f.rb ? `<div class="pic" data-act="zoom" style="cursor:zoom-in"><img src="https://cdn.rebrickable.com/media/thumbs/sets/${f.rb}.jpg/250x250p.jpg" alt="" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=none>Noch kein Bild</span>';"><button class="zoom" data-act="zoom" aria-label="${esc(f.name)} groß anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg></button></div>` : "";
+        const pic = f.rb ? `<div class="pic" data-act="zoom" style="cursor:zoom-in"><img src="https://cdn.rebrickable.com/media/thumbs/sets/${f.rb}.jpg/250x250p.jpg" alt="" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=none>${t("noImage")}</span>';"><button class="zoom" data-act="zoom" aria-label="${esc(t("showLarge",f.name))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg></button></div>` : "";
         html+=`<div class="fig${c>1?" dup":c?" own":""}${ig?" ign":""}" data-f="${f.id}">${pic}
-          <button class="tap" data-act="tick" aria-pressed="${c?"true":"false"}" aria-label="${esc(f.name)} ${c?"vorhanden":"fehlt"}"><span class="box">${c?"✓":f.no}</span><span class="fname">${esc(f.name)}${f.note?`<em>${esc(f.note)}</em>`:""}</span></button>
+          <button class="tap" data-act="tick" aria-pressed="${c?"true":"false"}" aria-label="${esc(f.name)} ${c?t("have"):t("missing")}"><span class="box">${c?"✓":f.no}</span><span class="fname">${esc(f.name)}${f.note?`<em>${esc(note(f.note))}</em>`:""}</span></button>
           ${PR.enabled?priceLine(f.id):""}
           <div class="frow">
-            <div class="step"><button data-act="dec" aria-label="Eine weniger" ${c?"":"disabled"}>−</button><span title="Anzahl">${c}×</span><button data-act="inc" aria-label="Eine mehr">+</button></div>
-            <span class="ficons">${c||ig?"":`<button class="heart" data-act="wish" aria-pressed="${w}" aria-label="Wunschliste" title="Wunschliste">${heartSvg}</button>`}${sIg?"":`<button class="heart ignbtn" data-act="ignfig" aria-pressed="${!!state.ignore.figs[f.id]}" aria-label="${ig?"Wieder aufnehmen":"Will ich nicht"}" title="${ig?"Wieder aufnehmen":"Will ich nicht"}">${eyeSvg(ig)}</button>`}</span>
-          </div>${ig?`<div class="igntag">Will ich nicht</div>`:""}</div>`;
+            <div class="step"><button data-act="dec" aria-label="${t("oneLess")}" ${c?"":"disabled"}>−</button><span title="${t("count")}">${c}×</span><button data-act="inc" aria-label="${t("oneMore")}">+</button></div>
+            <span class="ficons">${c||ig?"":`<button class="heart" data-act="wish" aria-pressed="${w}" aria-label="${t("wishlist")}" title="${t("wishlist")}">${heartSvg}</button>`}${sIg?"":`<button class="heart ignbtn" data-act="ignfig" aria-pressed="${!!state.ignore.figs[f.id]}" aria-label="${ig?t("include"):t("exclude")}" title="${ig?t("include"):t("exclude")}">${eyeSvg(ig)}</button>`}</span>
+          </div>${ig?`<div class="igntag">${t("exclude")}</div>`:""}</div>`;
       }
       html+=`</div></div>`;
     }
@@ -461,9 +485,9 @@ function render(){
   }
   list.classList.toggle("noimg", !ui.img);
   const ib=$("ignBar");
-  if(nIgS||nIgF){ ib.hidden=false; $("ignText").textContent=[nIgS?`${nIgS} ${nIgS===1?"Serie":"Serien"}`:"", nIgF?`${nIgF} ${nIgF===1?"Figur":"Figuren"}`:""].filter(Boolean).join(" und ")+" ausgeblendet"; $("ignToggle").textContent=ui.showIgnored?"Verbergen":"Anzeigen"; }
+  if(nIgS||nIgF){ ib.hidden=false; $("ignText").textContent=hiddenSummary(nIgS,nIgF); $("ignToggle").textContent=ui.showIgnored?t("hide"):t("show"); }
   else ib.hidden=true;
-  list.innerHTML = shown? html : `<div class="empty">Keine Figuren für diese Auswahl.</div>`;
+  list.innerHTML = shown? html : `<div class="empty">${t("empty")}</div>`;
   if(!$("tradePanel").hidden) renderTrade();
 }
 
@@ -489,8 +513,8 @@ list.addEventListener("click",e=>{
     case "zoom": openZoom(id); break;
     case "ignfig": toggleIgnoreFig(id); break;
     case "ignser": toggleIgnoreSeries(s); break;
-    case "all": activeFigs(s).forEach(f=>{ if(!state.owned[f.id]) state.owned[f.id]=1; delete state.wish[f.id]; }); commit(); toast(s.name+" komplett markiert"); break;
-    case "clear": arm(b,"Wirklich zurücksetzen?",()=>{ s.figs.forEach(f=>{delete state.owned[f.id]; delete state.wish[f.id];}); commit(); toast(s.name+" zurückgesetzt"); }); break;
+    case "all": activeFigs(s).forEach(f=>{ if(!state.owned[f.id]) state.owned[f.id]=1; delete state.wish[f.id]; }); commit(); toast(t("markedAll",s.name)); break;
+    case "clear": arm(b,t("confirmReset"),()=>{ s.figs.forEach(f=>{delete state.owned[f.id]; delete state.wish[f.id];}); commit(); toast(t("seriesReset",s.name)); }); break;
   }
 });
 
@@ -510,32 +534,37 @@ function renderTrade(){
   const bySeries=(ids,fmt)=>{ const g={}; ids.forEach(id=>{const f=FIGS[id];(g[f.series.id]=g[f.series.id]||[]).push(f);});
     return SERIES.filter(s=>g[s.id]).map(s=>`${s.name} (${s.set}):\n`+g[s.id].sort((a,b)=>a.no-b.no).map(fmt).join("\n")).join("\n\n"); };
   const dups=Object.keys(state.owned).filter(id=>state.owned[id]>1);
-  $("tOffer").value = dups.length? bySeries(dups,f=>`  ${f.no}. ${f.name} – ${state.owned[f.id]-1}×`) : "Noch keine doppelten Figuren.";
+  $("tOffer").value = dups.length? bySeries(dups,f=>`  ${f.no}. ${f.name} – ${state.owned[f.id]-1}×`) : t("noDups");
   const wish=Object.keys(state.wish);
   const started=SERIES.filter(s=>{const st=seriesStats(s);return st.got>0&&!st.done;});
   const missing=[]; started.forEach(s=>activeFigs(s).forEach(f=>{ if(!count(f.id)&&!state.wish[f.id]) missing.push(f.id); }));
-  let t="";
-  if(wish.length) t+="WUNSCHLISTE\n"+bySeries(wish,f=>`  ${f.no}. ${f.name}`);
-  if(missing.length) t+=(t?"\n\n":"")+"FEHLT IN ANGEFANGENEN SERIEN\n"+bySeries(missing,f=>`  ${f.no}. ${f.name}`);
-  $("tWant").value = t || "Nichts gesucht. Markiere Figuren auf der Wunschliste oder fang eine Serie an.";
+  let txt="";
+  if(wish.length) txt+=t("wishHead")+"\n"+bySeries(wish,f=>`  ${f.no}. ${f.name}`);
+  if(missing.length) txt+=(txt?"\n\n":"")+t("missingHead")+"\n"+bySeries(missing,f=>`  ${f.no}. ${f.name}`);
+  $("tWant").value = txt || t("nothingWanted");
 }
 
 async function copyText(text, el){
-  try{ await navigator.clipboard.writeText(text); toast("Kopiert"); }
-  catch(e){ if(el){el.focus(); el.select();} toast("Text markiert – jetzt kopieren"); }
+  try{ await navigator.clipboard.writeText(text); toast(t("copied")); }
+  catch(e){ if(el){el.focus(); el.select();} toast(t("selectedCopy")); }
 }
 document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>{const el=$(b.dataset.copy); copyText(el.value, el);}));
 $("btnExport").addEventListener("click",()=>{ const el=$("dataText"); el.value=JSON.stringify({app:"cmf-album",version:1,owned:state.owned,wish:state.wish,ignore:state.ignore,exported:new Date().toISOString()},null,1); copyText(el.value, el); $("dataNote").textContent=""; });
 $("btnImport").addEventListener("click",()=>{
   try{ const d=JSON.parse($("dataText").value); if(!d||typeof d!=="object"||!d.owned) throw 0;
-    state=sanitize(d); commit(); $("dataNote").textContent=`Eingespielt: ${Object.keys(state.owned).length} Figuren.`; toast("Sicherung eingespielt"); }
-  catch(e){ $("dataNote").textContent="Das ist keine gültige Sicherung. Füge den kompletten Text aus „Sicherung erzeugen“ ein."; }
+    state=sanitize(d); commit(); $("dataNote").textContent=t("imported",Object.keys(state.owned).length); toast(t("importedToast")); }
+  catch(e){ $("dataNote").textContent=t("importError"); }
 });
-$("btnReset").addEventListener("click",e=>arm(e.currentTarget,"Wirklich alles löschen?",()=>{ state={owned:{},wish:{},ignore:{series:{},figs:{}},updated:0}; commit(); toast("Sammlung zurückgesetzt"); }));
+$("btnReset").addEventListener("click",e=>arm(e.currentTarget,t("confirmResetAll"),()=>{ state={owned:{},wish:{},ignore:{series:{},figs:{}},updated:0}; commit(); toast(t("resetDone")); }));
 
+document.querySelectorAll(".lang button").forEach(b=>b.addEventListener("click",()=>{
+  if(lang===b.dataset.lang) return; lang=ui.lang=b.dataset.lang; lsSet(UI,ui); applyLang(); syncImgBtn(); render();
+  if(!lb.hidden&&lb.dataset.f) openZoom(lb.dataset.f);
+  if(syncEl.classList.contains("ok")) setSync("ok",t("saved"));
+}));
 $("ignToggle").addEventListener("click",()=>{ ui.showIgnored=!ui.showIgnored; lsSet(UI,ui); render(); });
 const btnImg=$("btnImg");
-function syncImgBtn(){ btnImg.setAttribute("aria-checked",String(ui.img)); btnImg.title = ui.img ? "Bilder ausblenden" : "Bilder einblenden"; }
+function syncImgBtn(){ btnImg.setAttribute("aria-checked",String(ui.img)); btnImg.title = ui.img ? t("imgOff") : t("imgOn"); }
 syncImgBtn();
 btnImg.addEventListener("click",()=>{ ui.img=!ui.img; lsSet(UI,ui); syncImgBtn(); render(); });
 
@@ -543,20 +572,20 @@ const lb=$("lb");
 function openZoom(id){
   const f=FIGS[id]; if(!f||!f.rb) return;
   const hasImg=!!document.querySelector(`[data-f="${id}"] .pic img`); $("lbImg").hidden=!hasImg; if(hasImg){ $("lbImg").src="https://cdn.rebrickable.com/media/sets/"+f.rb+".jpg"; $("lbImg").alt=f.name; } document.querySelector(".lb-card .plate").hidden=!hasImg;
-  $("lbName").textContent=f.name; $("lbSeries").textContent=f.series.name+" · Nr. "+f.no+" · "+f.series.set;
+  $("lbName").textContent=f.name; $("lbSeries").textContent=f.series.name+" · "+t("no")+" "+f.no+" · "+f.series.set;
   $("lbLink").href="https://rebrickable.com/sets/"+f.rb+"/";
   const p=priceOf(id);
   if(p&&p.bl){ $("lbBl").hidden=false; $("lbBl").href="https://www.bricklink.com/v2/catalog/catalogitem.page?M="+encodeURIComponent(p.bl)+"#T=P"; } else $("lbBl").hidden=true;
   const dl=$("lbPrice");
-  if(PR.enabled&&p&&p.t!=null){ dl.hidden=false; dl.innerHTML=`<dt>Verkauft Ø 6 Monate</dt><dd>${fmtEur(p.s)} <small>(${p.sq||0} Stk.)</small></dd><dt>Angebote Ø aktuell</dt><dd>${fmtEur(p.o)} <small>(${p.oq||0} Stk.)</small></dd>`; }
+  if(PR.enabled&&p&&p.t!=null){ dl.hidden=false; dl.innerHTML=`<dt>${t("soldAvg6")}</dt><dd>${fmtEur(p.s)} <small>(${t("pcs",p.sq||0)})</small></dd><dt>${t("offerAvgNow")}</dt><dd>${fmtEur(p.o)} <small>(${t("pcs",p.oq||0)})</small></dd>`; }
   else dl.hidden=true;
-  lb.hidden=false; $("lbClose").focus();
+  lb.dataset.f=id; lb.hidden=false; $("lbClose").focus();
 }
 function closeZoom(){ lb.hidden=true; $("lbImg").removeAttribute("src"); }
 lb.addEventListener("click",e=>{ if(e.target===lb||e.target.closest("#lbClose")) closeZoom(); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!lb.hidden) closeZoom(); });
 
-let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1800); }
+let tt; function toast(m){ const el=$("toast"); el.textContent=m; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("show"),1800); }
 
 render();
 loadCatalog();

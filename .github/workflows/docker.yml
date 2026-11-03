@@ -3,6 +3,7 @@ name: Docker-Image bauen
 on:
   push:
     branches: [main]
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -22,11 +23,17 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Image-Name klein schreiben
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - name: Image-Tags festlegen
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            V="${GITHUB_REF_NAME#v}"
+            echo "TAGS=${IMAGE}:${V},${IMAGE}:${V%.*}" >> "$GITHUB_ENV"
+          else
+            echo "TAGS=${IMAGE}:latest,${IMAGE}:${GITHUB_SHA}" >> "$GITHUB_ENV"
+          fi
       - uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           platforms: linux/amd64
-          tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ github.sha }}
+          tags: ${{ env.TAGS }}
