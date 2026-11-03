@@ -1,5 +1,7 @@
 # Minifiguren-Sammelalbum
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-unterst%C3%BCtzen-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/quentyn83)
+
 Sammel-Tracker für alle LEGO Collectible-Minifigures-Serien (51 Serien, 775 Figuren, Stand 10/2026),
 mit Bildern, Wunschliste, Doppelten, Tauschliste, BrickLink-Preisen und automatischer
 Erkennung neuer Serien.
@@ -122,6 +124,12 @@ Den Ordner `data/` in dein Backup aufnehmen. Zusätzlich gibt es in der App unte
 - [Torsten Weise](https://github.com/Qu3ntyn83) (@Qu3ntyn83): Idee, Betrieb und Weiterentwicklung
 
 Fehler und Wünsche gern als [Issue](https://github.com/Qu3ntyn83/minifig-album/issues).
+
+## Unterstützen
+
+Wenn dir das Projekt hilft und du mir einen Kaffee ausgeben möchtest, freue ich mich sehr:
+
+<a href="https://buymeacoffee.com/quentyn83"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="45"></a>
 
 ## Lizenz
 
