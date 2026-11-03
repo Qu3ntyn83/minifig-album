@@ -7,6 +7,32 @@ Erkennung neuer Serien.
 Ein Container, keine Datenbank: die Sammlung liegt als `data/state.json` im Bind-Mount,
 plus tägliche Sicherungen unter `data/backups/` (die letzten 30 Tage).
 
+## Screenshots
+
+![Übersicht mit Fortschritt, Sammlungswert und aufgeklappter Serie](docs/screenshots/uebersicht.png)
+
+<p>
+  <img src="docs/screenshots/handy-serie.png" alt="Serie am Handy im Dark Mode" width="300">
+  &nbsp;
+  <img src="docs/screenshots/handy-grossansicht.png" alt="Großansicht einer Figur mit BrickLink-Preisen" width="300">
+</p>
+
+![Tauschliste mit Doppelten und Gesuchten zum Kopieren](docs/screenshots/tauschliste.png)
+
+<sub>Die Screenshots zeigen eine Beispielsammlung mit Beispielpreisen.</sub>
+
+## Funktionen
+
+- Alle Serien von Series 1 (2010) bis heute, nummerierte und Lizenzserien
+- Abhaken per Tipp, Doppelte zählen, Wunschliste
+- Fotos jeder Figur (Rebrickable) mit Großansicht
+- BrickLink-Preise gebraucht: Ø Verkäufe der letzten 6 Monate und Ø aktuelle Angebote,
+  dazu Sammlungswert und Restkosten pro Serie
+- Serien oder einzelne Figuren ausblenden, die man nicht sammeln will
+- Tauschliste zum Kopieren, Export und Import der Sammlung
+- Neue Serien erscheinen automatisch, sobald sie im Rebrickable-Katalog stehen
+- Für Handy und Desktop, mit hellem und dunklem Design
+
 ## Installation
 
 Bei jedem Push auf `main` baut GitHub Actions das Image und legt es unter
@@ -90,6 +116,12 @@ Oder automatisch mit einem Container-Updater wie Watchtower.
 
 Den Ordner `data/` in dein Backup aufnehmen. Zusätzlich gibt es in der App unter
 „Sichern“ einen Export als Text.
+
+## Mitwirkende
+
+- [Torsten Weise](https://github.com/Qu3ntyn83) (@Qu3ntyn83): Idee, Betrieb und Weiterentwicklung
+
+Fehler und Wünsche gern als [Issue](https://github.com/Qu3ntyn83/minifig-album/issues).
 
 ## Lizenz
 
