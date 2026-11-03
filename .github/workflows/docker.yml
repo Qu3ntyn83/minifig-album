@@ -37,3 +37,13 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: ${{ env.TAGS }}
+          labels: |
+            org.opencontainers.image.title=Minifiguren-Sammelalbum
+            org.opencontainers.image.description=Self-hosted collection tracker for all LEGO Collectible Minifigures series, with images, wishlist, trade list, BrickLink prices and DE/EN interface
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}
+            org.opencontainers.image.documentation=https://github.com/${{ github.repository }}#readme
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.authors=Torsten Weise (https://github.com/Qu3ntyn83)
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.ref_name }}
